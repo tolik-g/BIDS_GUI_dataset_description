@@ -1,5 +1,7 @@
 import json
 from dataset_description_form import MainWindow
+from PyQt5.QtWidgets import QApplication, QScrollArea
+import sys
 
 # define pyqt5 main window class
 
@@ -9,17 +11,26 @@ from dataset_description_form import MainWindow
 
 def gen_dict():
     data = {}
-    data['Name'] = ''
-    data['BIDSVersion'] = ''  # make this drop down list
-    data['Authors'] = ''
-    data['Acknowledgements'] = ''
-    data['HowToAcknowledge'] = ''
-    data['Funding'] = ['', '', '']
-    data['ReferencesAndLinks'] = ['', '', '']
-    data['DatasetDOI'] = ''
+    data['Name'] = ''  # required
+    data['BIDSVersion'] = ''  # make this drop down list # required
+    data['DatasetType'] = ''  # recommended
+    data['License'] = ''  # make this drop down list # recommended
+    data['Authors'] = ''  # optional
+    data['Acknowledgements'] = ''  # optional
+    data['HowToAcknowledge'] = ''  # optional
+    data['Funding'] = ['', '', '']  # optional
+    data['ReferencesAndLinks'] = ['', '', '']  # optional
+    data['DatasetDOI'] = ''  # optional
     # need to pull directory on computer
 
     return
 
 def export_json():
     return
+
+
+app = QApplication([])
+window = MainWindow()
+sys.exit(app.exec())
+
+
