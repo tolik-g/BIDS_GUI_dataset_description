@@ -6,11 +6,14 @@ import sys
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        # non application logic setup
+        # non application-logic setup
         self.setWindowTitle('Dataset Description Generator')
         self.setStyleSheet(styles.STYLE)
 
-        # main layout and sub layouts (for dynamic field insertion)
+        # main layout and sub layouts (for dynamic field insertion).
+        # layouts *_author, *_funding, *_ethics, *_ref are for dynamically added
+        # fields in the main layout.
+        # layout *_derivative is for toggled derivative related fields.
         self.layout_main = QGridLayout()
         self.layout_author = QVBoxLayout()
         self.layout_funding = QVBoxLayout()
@@ -18,13 +21,14 @@ class MainWindow(QMainWindow):
         self.layout_ref = QVBoxLayout()
         self.layout_derivative = QGridLayout()
 
-        # lists to reference dynamically added fields
+        # lists of widgets for dynamically added (and subtracted) fields
         self.ref_ls = []
         self.ethics_ls = []
         self.funding_ls = []
         self.author_ls = []
+        self.derivative_ls = []
 
-        # scroll functionality setup
+        # main widget scrollable setup
         self.widget = QWidget()
         self.widget.setLayout(self.layout_main)
         self.scroll_area = QScrollArea(self)
@@ -66,6 +70,7 @@ class MainWindow(QMainWindow):
         data_type_label = QLabel('DatasetType')
         data_type_value = QComboBox()
         data_type_value.addItems(['unspecified', 'raw', 'derivative'])
+        data_type_value.currentIndexChanged.connect(self.dataset_type_handler)
         self.layout_main.addWidget(data_type_label, row, 0)
         self.layout_main.addWidget(data_type_value, row, 1, 1, 3)
         row += 1
@@ -149,15 +154,25 @@ class MainWindow(QMainWindow):
         row += 1
         self.layout_main.addLayout(self.layout_ref, row, 0, 1, -1)
         row += 1
-        self.layout_main.addItem(QSpacerItem(0, 5, QSizePolicy.Expanding),
-                                 row, 0, 1, -1)
-        row += 1
 
         # DatasetDOI
         doi_label = QLabel('DatasetDOI')
         doi_value = QLineEdit()
         self.layout_main.addWidget(doi_label, row, 0)
         self.layout_main.addWidget(doi_value, row, 1, 1, -1)
+        row += 1
+
+        ######## derivative toggle section #############
+        self.layout_main.addLayout(self.layout_derivative, row, 0, 1, -1)
+        row += 1
+
+        # save button, path selection section
+        save_button = QPushButton("Save")
+        save_as_button = QPushButton("Save as")
+        self.layout_main.addWidget(save_button, row, 1)
+        self.layout_main.addWidget(save_as_button, row, 2)
+        row += 1
+
 
         # spacer item to push content to top
         self.layout_main.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding),
@@ -210,6 +225,28 @@ class MainWindow(QMainWindow):
         self.layout_ref.removeWidget(self.ref_ls[-1])
         self.ref_ls[-1].deleteLater()
         self.ref_ls = self.ref_ls[:-1]
+
+    def init_ui_derivative(self):
+
+        gen_by_label = QLabel('GeneratedBy')
+
+
+        for i in range(5):
+            line = QLineEdit()
+            self.layout_derivative.addWidget(line, i, 0)
+            self.derivative_ls.append(line)
+
+    def clear_ui_derivative(self):
+        for item in self.derivative_ls:
+            item.deleteLater()
+        self.derivative_ls = []
+
+    def dataset_type_handler(self, index):
+        if index == 2:
+            self.init_ui_derivative()
+        elif len(self.derivative_ls) > 0:
+            self.clear_ui_derivative()
+
 
     def toggle_derivative(self):
         return
