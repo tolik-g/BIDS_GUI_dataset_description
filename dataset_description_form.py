@@ -6,9 +6,7 @@ import sys
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        # non application-logic setup
-        self.setWindowTitle('Dataset Description Generator')
-        self.setStyleSheet(styles.STYLE)
+
 
         # main layout and sub layouts (for dynamic field insertion).
         # layouts *_author, *_funding, *_ethics, *_ref are for dynamically added
@@ -20,6 +18,10 @@ class MainWindow(QMainWindow):
         self.layout_ethics = QVBoxLayout()
         self.layout_ref = QVBoxLayout()
         self.layout_derivative = QGridLayout()
+        # self.layout_derivative.setContentsMargins(0, 0, 0, 0)
+        self.layout_gen_by = QVBoxLayout()
+        # self.layout_gen_by.setContentsMargins(0, 0, 0, 0)
+
 
         # lists of widgets for dynamically added (and subtracted) fields
         self.ref_ls = []
@@ -40,6 +42,10 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(600, 800)
         self.init_ui()
         self.show()
+
+        # non application-logic setup
+        self.setWindowTitle('Dataset Description Generator')
+        self.setStyleSheet(styles.STYLE)
 
     def init_ui(self):
         """
@@ -163,8 +169,11 @@ class MainWindow(QMainWindow):
         row += 1
 
         ######## derivative toggle section #############
+        gen_b = GeneratedBy()
+
         self.layout_main.addLayout(self.layout_derivative, row, 0, 1, -1)
         row += 1
+        self.layout_derivative.addWidget(gen_b)
 
         # save button, path selection section
         save_button = QPushButton("Save")
@@ -173,9 +182,12 @@ class MainWindow(QMainWindow):
         self.layout_main.addWidget(save_as_button, row, 2)
         row += 1
 
+        # gen_b = GeneratedBy()
+        # self.layout_main.addWidget(gen_b, row, 0, 1, -1)
+        # row += 1
 
         # spacer item to push content to top
-        self.layout_main.addItem(QSpacerItem(0, 0, QSizePolicy.Expanding),
+        self.layout_main.addItem(QSpacerItem(0, 0),
                                  row, 0, 2, -1)
 
     def add_author(self):
@@ -227,14 +239,22 @@ class MainWindow(QMainWindow):
         self.ref_ls = self.ref_ls[:-1]
 
     def init_ui_derivative(self):
+        row = 0
 
         gen_by_label = QLabel('GeneratedBy')
+        self.derivative_ls.append(gen_by_label)
+        gen_by_add_button = QPushButton('+')
+        self.derivative_ls.append(gen_by_add_button)
+        gen_by_remove_button = QPushButton('-')
+        self.derivative_ls.append(gen_by_remove_button)
+        self.layout_derivative.addWidget(gen_by_label, row, 0)
+        self.layout_derivative.addWidget(gen_by_remove_button, row, 1)
+        self.layout_derivative.addWidget(gen_by_add_button, row, 2)
+        self.layout_derivative.addItem(QSpacerItem(0, 0), row, 3, 1, 1)
+        row += 1
 
 
-        for i in range(5):
-            line = QLineEdit()
-            self.layout_derivative.addWidget(line, i, 0)
-            self.derivative_ls.append(line)
+
 
     def clear_ui_derivative(self):
         for item in self.derivative_ls:
@@ -250,3 +270,73 @@ class MainWindow(QMainWindow):
 
     def toggle_derivative(self):
         return
+
+class GeneratedBy(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setStyleSheet(styles.STYLE)
+        self.layout = QGridLayout()
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.layout)
+        self.init_ui()
+
+    def init_ui(self):
+        row = 0
+        # Name
+        name_label = QLabel('Name')
+        name_value = QLineEdit()
+        self.layout.addWidget(name_label, row, 0)
+        self.layout.addWidget(name_value, row, 1, 1, -1)
+        row += 1
+
+        # Version
+        version_label = QLabel('Version')
+        version_value = QLineEdit()
+        self.layout.addWidget(version_label, row, 0)
+        self.layout.addWidget(version_value, row, 1, 1, -1)
+        row += 1
+
+        # Description
+        desc_label = QLabel('Description')
+        desc_value = QPlainTextEdit()
+        self.layout.addWidget(desc_label, row, 0)
+        row += 1
+        self.layout.addWidget(desc_value, row, 0, 1, -1)
+        row += 1
+
+        # CodeURL
+        url_label = QLabel('CodeURL')
+        url_value = QLineEdit()
+        self.layout.addWidget(url_label, row, 0)
+        self.layout.addWidget(url_value, row, 1, 1, -1)
+        row += 1
+
+        # Container
+        cont_label = QLabel('Container')
+        self.layout.addWidget(cont_label, row, 0)
+        row += 1
+
+        cont_type_label = QLabel('Type')
+        cont_type_value = QLineEdit()
+        self.layout.addWidget(cont_type_label, row, 1)
+        self.layout.addWidget(cont_type_value, row, 2, 1, -1)
+        row += 1
+
+        cont_tag_label = QLabel('Tag')
+        cont_tag_value = QLineEdit()
+        self.layout.addWidget(cont_tag_label, row, 1)
+        self.layout.addWidget(cont_tag_value, row, 2, 1, -1)
+        row += 1
+
+        cont_uri_label = QLabel('URI')
+        cont_uri_value = QLineEdit()
+        self.layout.addWidget(cont_uri_label, row, 1)
+        self.layout.addWidget(cont_uri_value, row, 2, 1, -1)
+        row += 1
+
+
+        # spacer
+        self.layout.addItem(QSpacerItem(0, 0), row, 0, 3, -1)
+
+
+
