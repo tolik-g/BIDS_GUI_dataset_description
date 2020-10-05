@@ -18,9 +18,8 @@ class MainWindow(QMainWindow):
         self.layout_ethics = QVBoxLayout()
         self.layout_ref = QVBoxLayout()
         self.layout_derivative = QGridLayout()
-        # self.layout_derivative.setContentsMargins(0, 0, 0, 0)
+        self.layout_src_data = QGridLayout()
         self.layout_gen_by = QVBoxLayout()
-        # self.layout_gen_by.setContentsMargins(0, 0, 0, 0)
 
 
         # lists of widgets for dynamically added (and subtracted) fields
@@ -29,6 +28,7 @@ class MainWindow(QMainWindow):
         self.funding_ls = []
         self.author_ls = []
         self.derivative_ls = []
+        self.gen_by_ls = []
 
         # main widget scrollable setup
         self.widget = QWidget()
@@ -104,7 +104,6 @@ class MainWindow(QMainWindow):
 
         # Acknowledgements
         ack_label = QLabel('Acknowledgements')
-        ack_label.setFixedHeight(30)
         ack_value = QPlainTextEdit()
         ack_value.setFixedHeight(100)
         self.layout_main.addWidget(ack_label, row, 0)
@@ -114,7 +113,6 @@ class MainWindow(QMainWindow):
 
         # HowToAcknowledge
         how_to_ack_label = QLabel('HowToAcknowledge')
-        how_to_ack_label.setFixedHeight(30)
         how_to_ack_value = QPlainTextEdit()
         how_to_ack_value.setFixedHeight(100)
         self.layout_main.addWidget(how_to_ack_label, row, 0)
@@ -169,11 +167,11 @@ class MainWindow(QMainWindow):
         row += 1
 
         ######## derivative toggle section #############
-        gen_b = GeneratedBy()
+        # self.gen_b = GeneratedBy()
 
         self.layout_main.addLayout(self.layout_derivative, row, 0, 1, -1)
-        row += 1
-        self.layout_derivative.addWidget(gen_b)
+        # row += 1
+        # self.layout_derivative.addWidget(self.gen_b)
 
         # save button, path selection section
         save_button = QPushButton("Save")
@@ -181,10 +179,6 @@ class MainWindow(QMainWindow):
         self.layout_main.addWidget(save_button, row, 1)
         self.layout_main.addWidget(save_as_button, row, 2)
         row += 1
-
-        # gen_b = GeneratedBy()
-        # self.layout_main.addWidget(gen_b, row, 0, 1, -1)
-        # row += 1
 
         # spacer item to push content to top
         self.layout_main.addItem(QSpacerItem(0, 0),
@@ -241,17 +235,24 @@ class MainWindow(QMainWindow):
     def init_ui_derivative(self):
         row = 0
 
+        # GeneratedBy control
         gen_by_label = QLabel('GeneratedBy')
         self.derivative_ls.append(gen_by_label)
         gen_by_add_button = QPushButton('+')
+        gen_by_add_button.clicked.connect(self.add_gen_by)
         self.derivative_ls.append(gen_by_add_button)
         gen_by_remove_button = QPushButton('-')
+        gen_by_remove_button.clicked.connect(self.remove_gen_by)
         self.derivative_ls.append(gen_by_remove_button)
         self.layout_derivative.addWidget(gen_by_label, row, 0)
         self.layout_derivative.addWidget(gen_by_remove_button, row, 1)
         self.layout_derivative.addWidget(gen_by_add_button, row, 2)
         self.layout_derivative.addItem(QSpacerItem(0, 0), row, 3, 1, 1)
         row += 1
+
+        # GeneratedBy fields
+        self.layout_derivative.addLayout(self.layout_gen_by, row, 0, 1, -1)
+        self.add_gen_by()
 
 
 
@@ -267,9 +268,24 @@ class MainWindow(QMainWindow):
         elif len(self.derivative_ls) > 0:
             self.clear_ui_derivative()
 
+    def add_gen_by(self):
+        print('button pressed')
+        gen_by = GeneratedBy()
+        self.gen_by_ls.append(gen_by)
+        self.layout_gen_by.addWidget(gen_by)
+
+    def remove_gen_by(self):
+        if len(self.gen_by_ls) == 1:
+            return
+        self.layout_gen_by.removeWidget(self.ref_ls[-1])
+        self.gen_by_ls[-1].deleteLater()
+        self.gen_by_ls = self.gen_by_ls[:-1]
+
+
 
     def toggle_derivative(self):
         return
+
 
 class GeneratedBy(QWidget):
     def __init__(self):
@@ -299,6 +315,7 @@ class GeneratedBy(QWidget):
         # Description
         desc_label = QLabel('Description')
         desc_value = QPlainTextEdit()
+        desc_value.setFixedHeight(100)
         self.layout.addWidget(desc_label, row, 0)
         row += 1
         self.layout.addWidget(desc_value, row, 0, 1, -1)
