@@ -1,8 +1,6 @@
 from PyQt5.QtWidgets import *
 from aux_classes import HLine
 import tooltips as tt
-import styles
-import sys
 
 
 class Derivative(QWidget):
@@ -210,3 +208,4 @@ class SourceDatasets(QWidget):
 
         # spacer to push content to top
         self.layout.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
+

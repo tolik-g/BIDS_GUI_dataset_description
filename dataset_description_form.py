@@ -9,6 +9,15 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.derivative = None
+        self.name_value = None
+        self.bids_ver_value = None
+        self.data_type_value = None
+        self.license_value = None
+        self.ack_value = None
+        self.how_to_ack_value = None
+        self.doi_value = None
+
         # main layout and sub layouts (for dynamic field insertion).
         # layouts *_author, *_funding, *_ethics, *_ref are for dynamically added
         # fields in the main layout.
@@ -27,7 +36,6 @@ class MainWindow(QMainWindow):
         self.ethics_ls = []
         self.funding_ls = []
         self.author_ls = []
-        self.derivative_ls = []
         self.gen_by_ls = []
 
         # main widget scrollable setup
@@ -59,41 +67,41 @@ class MainWindow(QMainWindow):
         # Name (Dataset name)
         name_label = QLabel('Name')
         name_label.setToolTip(tt.name)
-        name_value = QLineEdit()
         self.layout_main.addWidget(name_label, row, 0)
-        self.layout_main.addWidget(name_value, row, 1, 1, 3)
+        self.name_value = QLineEdit()
+        self.layout_main.addWidget(self.name_value, row, 1, 1, 3)
         row += 1
 
         # BIDSVersion
         bids_ver_label = QLabel('BIDSVersion')
         bids_ver_label.setToolTip(tt.bids_version)
-        bids_ver_value = QComboBox()
-        bids_ver_value.addItems(['1.4.0'])
-        bids_ver_value.setDisabled(True)  # to be modified in the future
+        self.bids_ver_value = QComboBox()
+        self.bids_ver_value.addItems(['1.4.0'])
+        self.bids_ver_value.setDisabled(True)  # to be modified in the future
         self.layout_main.addWidget(bids_ver_label, row, 0)
-        self.layout_main.addWidget(bids_ver_value, row, 1, 1, 3)
+        self.layout_main.addWidget(self.bids_ver_value, row, 1, 1, 3)
         row += 1
 
         # DatasetType
         data_type_label = QLabel('DatasetType')
         data_type_label.setToolTip(tt.dataset_type)
-        data_type_value = QComboBox()
-        data_type_value.addItems(['unspecified', 'raw', 'derivative'])
-        data_type_value.currentIndexChanged.connect(self.dataset_type_handler)
+        self.data_type_value = QComboBox()
+        self.data_type_value.addItems(['unspecified', 'raw', 'derivative'])
+        self.data_type_value.currentIndexChanged.connect(self.dataset_type_handler)
         self.layout_main.addWidget(data_type_label, row, 0)
-        self.layout_main.addWidget(data_type_value, row, 1, 1, 3)
+        self.layout_main.addWidget(self.data_type_value, row, 1, 1, 3)
         row += 1
 
         # License
         license_label = QLabel('License')
         license_label.setToolTip(tt.dataset_license)
-        license_value = QComboBox()
-        license_value.addItems(['unspecified', 'PD', 'PDDL', 'CC0'])
-        license_value.setItemData(1, tt.license_pd, Qt.ToolTipRole)
-        license_value.setItemData(2, tt.license_pddl, Qt.ToolTipRole)
-        license_value.setItemData(3, tt.license_cc0, Qt.ToolTipRole)
+        self.license_value = QComboBox()
+        self.license_value.addItems(['unspecified', 'PD', 'PDDL', 'CC0'])
+        self.license_value.setItemData(1, tt.license_pd, Qt.ToolTipRole)
+        self.license_value.setItemData(2, tt.license_pddl, Qt.ToolTipRole)
+        self.license_value.setItemData(3, tt.license_cc0, Qt.ToolTipRole)
         self.layout_main.addWidget(license_label, row, 0)
-        self.layout_main.addWidget(license_value, row, 1, 1, 3)
+        self.layout_main.addWidget(self.license_value, row, 1, 1, 3)
         row += 1
 
         # Authors
@@ -113,21 +121,21 @@ class MainWindow(QMainWindow):
         # Acknowledgements
         ack_label = QLabel('Acknowledgements')
         ack_label.setToolTip(tt.acknowledgements)
-        ack_value = QPlainTextEdit()
-        ack_value.setFixedHeight(100)
+        self.ack_value = QPlainTextEdit()
+        self.ack_value.setFixedHeight(100)
         self.layout_main.addWidget(ack_label, row, 0)
         row += 1
-        self.layout_main.addWidget(ack_value, row, 0, 1, 4)
+        self.layout_main.addWidget(self.ack_value, row, 0, 1, 4)
         row += 1
 
         # HowToAcknowledge
         how_to_ack_label = QLabel('HowToAcknowledge')
         how_to_ack_label.setToolTip(tt.how_to_ack)
-        how_to_ack_value = QPlainTextEdit()
-        how_to_ack_value.setFixedHeight(100)
+        self.how_to_ack_value = QPlainTextEdit()
+        self.how_to_ack_value.setFixedHeight(100)
         self.layout_main.addWidget(how_to_ack_label, row, 0)
         row += 1
-        self.layout_main.addWidget(how_to_ack_value, row, 0, 1, 4)
+        self.layout_main.addWidget(self.how_to_ack_value, row, 0, 1, 4)
         row += 1
 
         # Funding
@@ -175,9 +183,9 @@ class MainWindow(QMainWindow):
         # DatasetDOI
         doi_label = QLabel('DatasetDOI')
         doi_label.setToolTip(tt.dataset_doi)
-        doi_value = QLineEdit()
+        self.doi_value = QLineEdit()
         self.layout_main.addWidget(doi_label, row, 0)
-        self.layout_main.addWidget(doi_value, row, 1, 1, -1)
+        self.layout_main.addWidget(self.doi_value, row, 1, 1, -1)
         row += 1
 
         # Derivative sections (fields dynamically added to layout)
@@ -243,19 +251,38 @@ class MainWindow(QMainWindow):
         self.ref_ls = self.ref_ls[:-1]
 
     def init_ui_derivative(self):
-        derivative = Derivative()
-        self.layout_derivative.addWidget(derivative)
-        self.derivative_ls.append(derivative)
+        self.derivative = Derivative()
+        self.layout_derivative.addWidget(self.derivative)
 
     def clear_ui_derivative(self):
-        print(len(self.derivative_ls))
-        for item in self.derivative_ls:
-            item.deleteLater()
-        self.derivative_ls = []
+        if self.derivative is None:
+            return
+        self.derivative.deleteLater()
+        self.derivative = None
 
     def dataset_type_handler(self, index):
         if index == 2:
             self.init_ui_derivative()
-            # self.add_gen_by()
-        elif len(self.derivative_ls) > 0:
+        else:
             self.clear_ui_derivative()
+
+    def get_data(self):
+        data = {}
+        data['Name'] = self.name_value.text()
+        data['BIDSVersion'] = self.bids_ver_value.currentText()
+        data['DatasetType'] = self.data_type_value.currentText()
+        data['License'] = self.license_value.currentText()
+        data['Authors'] = [i.text() for i in self.author_ls]
+        data['Acknowledgements'] = self.ack_value.toPlainText()
+        data['HowToAcknowledge'] = self.how_to_ack_value.toPlainText()
+        data['Funding'] = [i.text() for i in self.funding_ls]
+        data['EthicsApprovals'] = [i.text() for i in self.ethics_ls]
+        data['ReferencesAndLinks'] = [i.text() for i in self.ref_ls]
+        data['DatasetDOI'] = self.doi_value.text()
+
+        if self.derivative is not None:
+            data_derivative = self.derivative.get_data()
+            #TODO: add to data from data_derivative
+
+
+
