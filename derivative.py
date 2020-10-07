@@ -89,12 +89,33 @@ class Derivative(QWidget):
         self.src_data_ls = self.src_data_ls[:-1]
 
     def get_data(self):
-        return
+        gen_by_data_ls = []
+        src_data_data_ls = []
+        for i in self.gen_by_ls:
+            gen_by_data_ls.append(i.get_data())
+        for i in self.src_data_ls:
+            src_data_data_ls.append(i.get_data())
+        data = {
+            'GeneratedBy': gen_by_data_ls,
+            'SourceDatasets': src_data_data_ls
+        }
+        return data
+
 
 
 class GeneratedBy(QWidget):
     def __init__(self):
         super().__init__()
+
+        # static widgets with stored user input data
+        self.name_value = None
+        self.version_value = None
+        self.desc_value = None
+        self.url_value = None
+        self.cont_type_value = None
+        self.cont_tag_value = None
+        self.cont_uri_value = None
+
         self.layout = QGridLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
@@ -105,36 +126,36 @@ class GeneratedBy(QWidget):
         # Name
         name_label = QLabel('Name')
         name_label.setToolTip(tt.gen_name)
-        name_value = QLineEdit()
         self.layout.addWidget(name_label, row, 0)
-        self.layout.addWidget(name_value, row, 1, 1, -1)
+        self.name_value = QLineEdit()
+        self.layout.addWidget(self.name_value, row, 1, 1, -1)
         row += 1
 
         # Version
         version_label = QLabel('Version')
         version_label.setToolTip(tt.gen_version)
-        version_value = QLineEdit()
+        self.version_value = QLineEdit()
         self.layout.addWidget(version_label, row, 0)
-        self.layout.addWidget(version_value, row, 1, 1, -1)
+        self.layout.addWidget(self.version_value, row, 1, 1, -1)
         row += 1
 
         # Description
         desc_label = QLabel('Description')
         desc_label.setToolTip(tt.gen_description)
-        desc_value = QPlainTextEdit()
         policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        desc_value.setSizePolicy(policy)
+        self.desc_value = QPlainTextEdit()
+        self.desc_value.setSizePolicy(policy)
         self.layout.addWidget(desc_label, row, 0)
         row += 1
-        self.layout.addWidget(desc_value, row, 0, 1, -1)
+        self.layout.addWidget(self.desc_value, row, 0, 1, -1)
         row += 1
 
         # CodeURL
         url_label = QLabel('CodeURL')
         url_label.setToolTip(tt.gen_code_url)
-        url_value = QLineEdit()
+        self.url_value = QLineEdit()
         self.layout.addWidget(url_label, row, 0)
-        self.layout.addWidget(url_value, row, 1, 1, -1)
+        self.layout.addWidget(self.url_value, row, 1, 1, -1)
         row += 1
 
         # Container
@@ -144,21 +165,21 @@ class GeneratedBy(QWidget):
         row += 1
 
         cont_type_label = QLabel('Type')
-        cont_type_value = QLineEdit()
+        self.cont_type_value = QLineEdit()
         self.layout.addWidget(cont_type_label, row, 1)
-        self.layout.addWidget(cont_type_value, row, 2, 1, -1)
+        self.layout.addWidget(self.cont_type_value, row, 2, 1, -1)
         row += 1
 
         cont_tag_label = QLabel('Tag')
-        cont_tag_value = QLineEdit()
+        self.cont_tag_value = QLineEdit()
         self.layout.addWidget(cont_tag_label, row, 1)
-        self.layout.addWidget(cont_tag_value, row, 2, 1, -1)
+        self.layout.addWidget(self.cont_tag_value, row, 2, 1, -1)
         row += 1
 
         cont_uri_label = QLabel('URI')
-        cont_uri_value = QLineEdit()
+        self.cont_uri_value = QLineEdit()
         self.layout.addWidget(cont_uri_label, row, 1)
-        self.layout.addWidget(cont_uri_value, row, 2, 1, -1)
+        self.layout.addWidget(self.cont_uri_value, row, 2, 1, -1)
         row += 1
 
         # separator line
@@ -169,9 +190,28 @@ class GeneratedBy(QWidget):
         # spacer to push content to top
         self.layout.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
 
+    def get_data(self):
+        data = {
+            'Name': self.name_value.text(),
+            'Version': self.version_value.text(),
+            'Description': self.desc_value.toPlainText(),
+            'CodeURL': self.url_value.text(),
+            'Container': {
+                'Type': self.cont_type_value.text(),
+                'Tag': self.cont_tag_value.text(),
+                'URI': self.cont_uri_value.text(),
+            }
+        }
+        return data
+
 
 class SourceDatasets(QWidget):
     def __init__(self):
+        # static widgets with stored user input data
+        self.doi_value = None
+        self.url_value = None
+        self.version_value = None
+
         super().__init__()
         self.layout = QGridLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -182,23 +222,23 @@ class SourceDatasets(QWidget):
         row = 0
         # DOI
         doi_label = QLabel('DOI')
-        doi_value = QLineEdit()
+        self.doi_value = QLineEdit()
         self.layout.addWidget(doi_label, row, 0)
-        self.layout.addWidget(doi_value, row, 1, 1, -1)
+        self.layout.addWidget(self.doi_value, row, 1, 1, -1)
         row += 1
 
         # URL
         url_label = QLabel('URL')
-        url_value = QLineEdit()
+        self.url_value = QLineEdit()
         self.layout.addWidget(url_label, row, 0)
-        self.layout.addWidget(url_value, row, 1, 1, -1)
+        self.layout.addWidget(self.url_value, row, 1, 1, -1)
         row += 1
 
         # Version
         version_label = QLabel('Version')
-        version_value = QLineEdit()
+        self.version_value = QLineEdit()
         self.layout.addWidget(version_label, row, 0)
-        self.layout.addWidget(version_value, row, 1, 1, -1)
+        self.layout.addWidget(self.version_value, row, 1, 1, -1)
         row += 1
 
         # separator line
@@ -209,3 +249,10 @@ class SourceDatasets(QWidget):
         # spacer to push content to top
         self.layout.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
 
+    def get_data(self):
+        data = {
+            'DOI': self.doi_value.text(),
+            'URL': self.url_value.text(),
+            'Version': self.version_value.text()
+        }
+        return data

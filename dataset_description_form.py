@@ -10,6 +10,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        # static widgets with stored user input data
         self.derivative = None
         self.name_value = None
         self.bids_ver_value = None
@@ -89,7 +90,8 @@ class MainWindow(QMainWindow):
         data_type_label.setToolTip(tt.dataset_type)
         self.data_type_value = QComboBox()
         self.data_type_value.addItems(['unspecified', 'raw', 'derivative'])
-        self.data_type_value.currentIndexChanged.connect(self.dataset_type_handler)
+        self.data_type_value.currentIndexChanged.connect(
+            self.dataset_type_handler)
         self.layout_main.addWidget(data_type_label, row, 0)
         self.layout_main.addWidget(self.data_type_value, row, 1, 1, 3)
         row += 1
@@ -315,4 +317,9 @@ class MainWindow(QMainWindow):
 
         if self.derivative is not None:
             data_derivative = self.derivative.get_data()
-            # TODO: add to data from data_derivative
+            data['GeneratedBy'] = data_derivative['GeneratedBy']
+            data['SourceDatasets'] = data_derivative['SourceDatasets']
+        return data
+
+    def test_get_data(self):
+        print(self.get_data())
