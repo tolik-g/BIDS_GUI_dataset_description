@@ -69,7 +69,7 @@ class Derivative(QWidget):
         self.gen_by_ls.append(gen_by)
 
     def remove_gen_by(self):
-        if len(self.gen_by_ls) == 0:
+        if len(self.gen_by_ls) == 1:
             return
         self.layout_gen_by.removeWidget(self.gen_by_ls[-1])
         self.gen_by_ls[-1].deleteLater()
