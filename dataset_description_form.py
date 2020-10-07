@@ -214,15 +214,8 @@ class MainWindow(QMainWindow):
             self.save_as()
             return
 
-        dummy_data = {
-            "name": 'abc',
-            "age": 30,
-            "city": "New York"
-        }
-        # TODO: pass self.data
-
         with open(self.curr_file_name, 'w', encoding='utf-8') as f:
-            json.dump(dummy_data, f, indent=4)
+            json.dump(self.get_data(), f, indent=4)
 
     def save_as(self):
         options = QFileDialog.Options()
