@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import *
+from PyQt5.QtCore import Qt
 import styles
 from derivative import Derivative
+import tooltips as tt
 
 
 class MainWindow(QMainWindow):
@@ -56,6 +58,7 @@ class MainWindow(QMainWindow):
 
         # Name (Dataset name)
         name_label = QLabel('Name')
+        name_label.setToolTip(tt.name)
         name_value = QLineEdit()
         self.layout_main.addWidget(name_label, row, 0)
         self.layout_main.addWidget(name_value, row, 1, 1, 3)
@@ -63,6 +66,7 @@ class MainWindow(QMainWindow):
 
         # BIDSVersion
         bids_ver_label = QLabel('BIDSVersion')
+        bids_ver_label.setToolTip(tt.bids_version)
         bids_ver_value = QComboBox()
         bids_ver_value.addItems(['1.4.0'])
         bids_ver_value.setDisabled(True)  # to be modified in the future
@@ -72,6 +76,7 @@ class MainWindow(QMainWindow):
 
         # DatasetType
         data_type_label = QLabel('DatasetType')
+        data_type_label.setToolTip(tt.dataset_type)
         data_type_value = QComboBox()
         data_type_value.addItems(['unspecified', 'raw', 'derivative'])
         data_type_value.currentIndexChanged.connect(self.dataset_type_handler)
@@ -81,14 +86,19 @@ class MainWindow(QMainWindow):
 
         # License
         license_label = QLabel('License')
+        license_label.setToolTip(tt.dataset_license)
         license_value = QComboBox()
         license_value.addItems(['unspecified', 'PD', 'PDDL', 'CC0'])
+        license_value.setItemData(1, tt.license_pd, Qt.ToolTipRole)
+        license_value.setItemData(2, tt.license_pddl, Qt.ToolTipRole)
+        license_value.setItemData(3, tt.license_cc0, Qt.ToolTipRole)
         self.layout_main.addWidget(license_label, row, 0)
         self.layout_main.addWidget(license_value, row, 1, 1, 3)
         row += 1
 
         # Authors
         author_label = QLabel('Author')
+        author_label.setToolTip(tt.authors)
         author_button_add = QPushButton('+')
         author_button_add.clicked.connect(self.add_author)
         author_button_remove = QPushButton('-')
@@ -102,6 +112,7 @@ class MainWindow(QMainWindow):
 
         # Acknowledgements
         ack_label = QLabel('Acknowledgements')
+        ack_label.setToolTip(tt.acknowledgements)
         ack_value = QPlainTextEdit()
         ack_value.setFixedHeight(100)
         self.layout_main.addWidget(ack_label, row, 0)
@@ -111,6 +122,7 @@ class MainWindow(QMainWindow):
 
         # HowToAcknowledge
         how_to_ack_label = QLabel('HowToAcknowledge')
+        how_to_ack_label.setToolTip(tt.how_to_ack)
         how_to_ack_value = QPlainTextEdit()
         how_to_ack_value.setFixedHeight(100)
         self.layout_main.addWidget(how_to_ack_label, row, 0)
@@ -120,6 +132,7 @@ class MainWindow(QMainWindow):
 
         # Funding
         funding_label = QLabel('Funding')
+        funding_label.setToolTip(tt.funding)
         funding_button_add = QPushButton('+')
         funding_button_add.clicked.connect(self.add_funding)
         funding_button_remove = QPushButton('-')
@@ -133,6 +146,7 @@ class MainWindow(QMainWindow):
 
         # EthicsApprovals
         ethics_label = QLabel('EthicsApprovals')
+        ethics_label.setToolTip(tt.ethics_approval)
         ethics_button_add = QPushButton('+')
         ethics_button_add.clicked.connect(self.add_ethics)
         ethics_button_remove = QPushButton('-')
@@ -146,6 +160,7 @@ class MainWindow(QMainWindow):
 
         # ReferencesAndLinks
         ref_label = QLabel('ReferencesAndLinks')
+        ref_label.setToolTip(tt.ref_and_links)
         ref_button_add = QPushButton('+')
         ref_button_add.clicked.connect(self.add_ref)
         ref_button_remove = QPushButton('-')
@@ -159,6 +174,7 @@ class MainWindow(QMainWindow):
 
         # DatasetDOI
         doi_label = QLabel('DatasetDOI')
+        doi_label.setToolTip(tt.dataset_doi)
         doi_value = QLineEdit()
         self.layout_main.addWidget(doi_label, row, 0)
         self.layout_main.addWidget(doi_value, row, 1, 1, -1)

@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import *
 from aux_classes import HLine
+import tooltips as tt
 import styles
 import sys
 
@@ -31,6 +32,7 @@ class Derivative(QWidget):
 
         # GeneratedBy control
         gen_by_label = QLabel('GeneratedBy')
+        gen_by_label.setToolTip(tt.generated_by)
         gen_by_add_button = QPushButton('+')
         gen_by_add_button.clicked.connect(self.add_gen_by)
         gen_by_remove_button = QPushButton('-')
@@ -46,6 +48,7 @@ class Derivative(QWidget):
 
         # SourceDatasets control
         src_data_label = QLabel('SourceDatasets')
+        src_data_label.setToolTip(tt.sources_datasets)
         src_data_add_button = QPushButton('+')
         src_data_add_button.clicked.connect(self.add_src_data)
         src_data_remove_button = QPushButton('-')
@@ -103,6 +106,7 @@ class GeneratedBy(QWidget):
         row = 0
         # Name
         name_label = QLabel('Name')
+        name_label.setToolTip(tt.gen_name)
         name_value = QLineEdit()
         self.layout.addWidget(name_label, row, 0)
         self.layout.addWidget(name_value, row, 1, 1, -1)
@@ -110,6 +114,7 @@ class GeneratedBy(QWidget):
 
         # Version
         version_label = QLabel('Version')
+        version_label.setToolTip(tt.gen_version)
         version_value = QLineEdit()
         self.layout.addWidget(version_label, row, 0)
         self.layout.addWidget(version_value, row, 1, 1, -1)
@@ -117,17 +122,18 @@ class GeneratedBy(QWidget):
 
         # Description
         desc_label = QLabel('Description')
+        desc_label.setToolTip(tt.gen_description)
         desc_value = QPlainTextEdit()
         policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         desc_value.setSizePolicy(policy)
         self.layout.addWidget(desc_label, row, 0)
         row += 1
-        # TODO: fix space created when using plaintext widget
         self.layout.addWidget(desc_value, row, 0, 1, -1)
         row += 1
 
         # CodeURL
         url_label = QLabel('CodeURL')
+        url_label.setToolTip(tt.gen_code_url)
         url_value = QLineEdit()
         self.layout.addWidget(url_label, row, 0)
         self.layout.addWidget(url_value, row, 1, 1, -1)
@@ -135,6 +141,7 @@ class GeneratedBy(QWidget):
 
         # Container
         cont_label = QLabel('Container')
+        cont_label.setToolTip(tt.gen_container)
         self.layout.addWidget(cont_label, row, 0)
         row += 1
 
@@ -203,7 +210,3 @@ class SourceDatasets(QWidget):
 
         # spacer to push content to top
         self.layout.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
-
-
-
-
