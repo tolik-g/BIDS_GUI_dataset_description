@@ -3,6 +3,7 @@ from PyQt5.QtCore import Qt
 import styles
 from derivative import Derivative
 import tooltips as tt
+import json
 
 
 class MainWindow(QMainWindow):
@@ -199,7 +200,7 @@ class MainWindow(QMainWindow):
         self.layout_main.addWidget(save_button, row, 1)
         self.layout_main.addWidget(save_as_button, row, 2)
         save_as_button.clicked.connect(self.save_as)
-        save_button.clicked.connect(self.save)
+        save_button.clicked.connect(self.save_data_as_json)
 
         row += 1
 
@@ -207,9 +208,19 @@ class MainWindow(QMainWindow):
         self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 3, -1)
 
     def save_data_as_json(self):
-        f = open(self.curr_file_name, "a")
-        f.write("data")
-        f.close()
+        if not self.curr_file_name:
+            self.save_as()
+            return
+
+        dummy_data = {
+            "name": 'abc',
+            "age": 30,
+            "city": "New York"
+        }
+        # TODO: pass self.data
+
+        with open(self.curr_file_name, 'w', encoding='utf-8') as f:
+            json.dump(dummy_data, f, indent=4)
 
     def save_as(self):
         options = QFileDialog.Options()
@@ -219,11 +230,9 @@ class MainWindow(QMainWindow):
         if not file_name:
             print('failed to save new file')
 
-        file_name += '.json'
+        if not file_name.endswith('.json'):
+            file_name += '.json'
         self.curr_file_name = file_name
-        self.save_data_as_json()
-
-    def save(self):
         self.save_data_as_json()
 
     def add_author(self):
