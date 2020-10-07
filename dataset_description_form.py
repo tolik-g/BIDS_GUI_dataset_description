@@ -17,6 +17,7 @@ class MainWindow(QMainWindow):
         self.ack_value = None
         self.how_to_ack_value = None
         self.doi_value = None
+        self.curr_file_name = None
 
         # main layout and sub layouts (for dynamic field insertion).
         # layouts *_author, *_funding, *_ethics, *_ref are for dynamically added
@@ -197,10 +198,33 @@ class MainWindow(QMainWindow):
         save_as_button = QPushButton("Save as")
         self.layout_main.addWidget(save_button, row, 1)
         self.layout_main.addWidget(save_as_button, row, 2)
+        save_as_button.clicked.connect(self.save_as)
+        save_button.clicked.connect(self.save)
+
         row += 1
 
         # spacer item to push content to top
         self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 3, -1)
+
+    def save_data_as_json(self):
+        f = open(self.curr_file_name, "a")
+        f.write("data")
+        f.close()
+
+    def save_as(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save as", "",
+                                                   "All Files (*);;Text Files (*.txt)", options=options)
+        if not file_name:
+            print('failed to save new file')
+
+        file_name += '.json'
+        self.curr_file_name = file_name
+        self.save_data_as_json()
+
+    def save(self):
+        self.save_data_as_json()
 
     def add_author(self):
         line = QLineEdit()
@@ -282,7 +306,4 @@ class MainWindow(QMainWindow):
 
         if self.derivative is not None:
             data_derivative = self.derivative.get_data()
-            #TODO: add to data from data_derivative
-
-
-
+            # TODO: add to data from data_derivative
