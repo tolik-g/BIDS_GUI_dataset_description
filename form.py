@@ -78,7 +78,6 @@ class MainWindow(QMainWindow):
         name_label.setToolTip(tt.name)
         self.layout_main.addWidget(name_label, row, 0)
         self.name_value = new_line_edit(self.state_changed)
-        self.name_value.textChanged.connect(self.state_changed)
 
         self.layout_main.addWidget(self.name_value, row, 1, 1, 3)
         row += 1
