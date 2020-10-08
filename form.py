@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 import styles
-from derivative import Derivative
+from form_derivative import Derivative
 import tooltips as tt
 import json
 
@@ -66,6 +66,7 @@ class MainWindow(QMainWindow):
         :return:
         """
         row = 0  # for main layout row count
+        policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         # Name (Dataset name)
         name_label = QLabel('Name')
@@ -126,20 +127,20 @@ class MainWindow(QMainWindow):
         ack_label = QLabel('Acknowledgements')
         ack_label.setToolTip(tt.acknowledgements)
         self.ack_value = QPlainTextEdit()
-        self.ack_value.setFixedHeight(100)
+        self.ack_value.setSizePolicy(policy)
         self.layout_main.addWidget(ack_label, row, 0)
         row += 1
-        self.layout_main.addWidget(self.ack_value, row, 0, 1, 4)
+        self.layout_main.addWidget(self.ack_value, row, 0, 1, -1)
         row += 1
 
         # HowToAcknowledge
         how_to_ack_label = QLabel('HowToAcknowledge')
         how_to_ack_label.setToolTip(tt.how_to_ack)
         self.how_to_ack_value = QPlainTextEdit()
-        self.how_to_ack_value.setFixedHeight(100)
+        self.how_to_ack_value.setSizePolicy(policy)
         self.layout_main.addWidget(how_to_ack_label, row, 0)
         row += 1
-        self.layout_main.addWidget(self.how_to_ack_value, row, 0, 1, 4)
+        self.layout_main.addWidget(self.how_to_ack_value, row, 0, 1, -1)
         row += 1
 
         # Funding
