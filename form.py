@@ -79,7 +79,7 @@ class MainWindow(QMainWindow):
         self.layout_main.addWidget(name_label, row, 0)
         self.name_value = new_line_edit(self.state_changed)
 
-        self.layout_main.addWidget(self.name_value, row, 1, 1, 3)
+        self.layout_main.addWidget(self.name_value, row, 1, 1, 4)
         row += 1
 
         # BIDSVersion
@@ -89,7 +89,7 @@ class MainWindow(QMainWindow):
         self.bids_ver_value.addItems(['1.4.0'])
         self.bids_ver_value.setDisabled(True)  # to be modified in the future
         self.layout_main.addWidget(bids_ver_label, row, 0)
-        self.layout_main.addWidget(self.bids_ver_value, row, 1, 1, 3)
+        self.layout_main.addWidget(self.bids_ver_value, row, 1, 1, 4)
         row += 1
 
         # DatasetType
@@ -100,7 +100,7 @@ class MainWindow(QMainWindow):
         self.data_type_value.currentIndexChanged.connect(
             self.dataset_type_handler)
         self.layout_main.addWidget(data_type_label, row, 0)
-        self.layout_main.addWidget(self.data_type_value, row, 1, 1, 3)
+        self.layout_main.addWidget(self.data_type_value, row, 1, 1, 4)
         row += 1
 
         # License
@@ -112,7 +112,7 @@ class MainWindow(QMainWindow):
         self.license_value.setItemData(2, tt.license_pddl, Qt.ToolTipRole)
         self.license_value.setItemData(3, tt.license_cc0, Qt.ToolTipRole)
         self.layout_main.addWidget(license_label, row, 0)
-        self.layout_main.addWidget(self.license_value, row, 1, 1, 3)
+        self.layout_main.addWidget(self.license_value, row, 1, 1, 4)
         row += 1
 
         # Authors
@@ -216,7 +216,7 @@ class MainWindow(QMainWindow):
         row += 1
 
         # spacer item to push content to top
-        self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 3, -1)
+        self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
 
     def state_changed(self):
         if not self.curr_file_name:
