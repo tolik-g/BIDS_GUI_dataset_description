@@ -1,9 +1,13 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import Qt
-import styles
-from form_derivative import Derivative
-import tooltips as tt
 import json
+import ntpath
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import *
+
+import styles
+import tooltips as tt
+from form_derivative import Derivative
+from utils import new_line_edit, new_text_edit, new_combo_box
 
 
 class MainWindow(QMainWindow):
@@ -20,6 +24,7 @@ class MainWindow(QMainWindow):
         self.how_to_ack_value = None
         self.doi_value = None
         self.curr_file_name = None
+        self.curr_saved_label = None
 
         # main layout and sub layouts (for dynamic field insertion).
         # layouts *_author, *_funding, *_ethics, *_ref are for dynamically added
@@ -72,7 +77,9 @@ class MainWindow(QMainWindow):
         name_label = QLabel('Name')
         name_label.setToolTip(tt.name)
         self.layout_main.addWidget(name_label, row, 0)
-        self.name_value = QLineEdit()
+        self.name_value = new_line_edit(self.state_changed)
+        self.name_value.textChanged.connect(self.state_changed)
+
         self.layout_main.addWidget(self.name_value, row, 1, 1, 3)
         row += 1
 
@@ -100,7 +107,7 @@ class MainWindow(QMainWindow):
         # License
         license_label = QLabel('License')
         license_label.setToolTip(tt.dataset_license)
-        self.license_value = QComboBox()
+        self.license_value = new_combo_box(self.state_changed)
         self.license_value.addItems(['unspecified', 'PD', 'PDDL', 'CC0'])
         self.license_value.setItemData(1, tt.license_pd, Qt.ToolTipRole)
         self.license_value.setItemData(2, tt.license_pddl, Qt.ToolTipRole)
@@ -126,7 +133,7 @@ class MainWindow(QMainWindow):
         # Acknowledgements
         ack_label = QLabel('Acknowledgements')
         ack_label.setToolTip(tt.acknowledgements)
-        self.ack_value = QPlainTextEdit()
+        self.ack_value = new_text_edit(self.state_changed)
         self.ack_value.setSizePolicy(policy)
         self.layout_main.addWidget(ack_label, row, 0)
         row += 1
@@ -136,7 +143,7 @@ class MainWindow(QMainWindow):
         # HowToAcknowledge
         how_to_ack_label = QLabel('HowToAcknowledge')
         how_to_ack_label.setToolTip(tt.how_to_ack)
-        self.how_to_ack_value = QPlainTextEdit()
+        self.how_to_ack_value = new_text_edit(self.state_changed)
         self.how_to_ack_value.setSizePolicy(policy)
         self.layout_main.addWidget(how_to_ack_label, row, 0)
         row += 1
@@ -188,7 +195,7 @@ class MainWindow(QMainWindow):
         # DatasetDOI
         doi_label = QLabel('DatasetDOI')
         doi_label.setToolTip(tt.dataset_doi)
-        self.doi_value = QLineEdit()
+        self.doi_value = new_line_edit(self.state_changed)
         self.layout_main.addWidget(doi_label, row, 0)
         self.layout_main.addWidget(self.doi_value, row, 1, 1, -1)
         row += 1
@@ -200,8 +207,10 @@ class MainWindow(QMainWindow):
         # save button, path selection section
         save_button = QPushButton("Save")
         save_as_button = QPushButton("Save as")
+        self.curr_saved_label = QLabel('')
         self.layout_main.addWidget(save_button, row, 1)
         self.layout_main.addWidget(save_as_button, row, 2)
+        self.layout_main.addWidget(self.curr_saved_label, row, 3)
         save_as_button.clicked.connect(self.save_as)
         save_button.clicked.connect(self.save_data_as_json)
 
@@ -210,6 +219,12 @@ class MainWindow(QMainWindow):
         # spacer item to push content to top
         self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 3, -1)
 
+    def state_changed(self):
+        if not self.curr_file_name:
+            return
+
+        self.curr_saved_label.setText(ntpath.basename(self.curr_file_name) + ' *')
+
     def save_data_as_json(self):
         if not self.curr_file_name:
             self.save_as()
@@ -217,6 +232,8 @@ class MainWindow(QMainWindow):
 
         with open(self.curr_file_name, 'w', encoding='utf-8') as f:
             json.dump(self.get_data(), f, indent=4)
+
+        self.curr_saved_label.setText(ntpath.basename(self.curr_file_name) + ' saved')
 
     def save_as(self):
         options = QFileDialog.Options()
@@ -232,7 +249,7 @@ class MainWindow(QMainWindow):
         self.save_data_as_json()
 
     def add_author(self):
-        line = QLineEdit()
+        line = new_line_edit(self.state_changed)
         self.author_ls.append(line)
         self.layout_author.addWidget(line)
 
@@ -244,7 +261,7 @@ class MainWindow(QMainWindow):
         self.author_ls = self.author_ls[:-1]
 
     def add_funding(self):
-        line = QLineEdit()
+        line = new_line_edit(self.state_changed)
         self.funding_ls.append(line)
         self.layout_funding.addWidget(line)
 
@@ -256,7 +273,7 @@ class MainWindow(QMainWindow):
         self.funding_ls = self.funding_ls[:-1]
 
     def add_ethics(self):
-        line = QLineEdit()
+        line = new_line_edit(self.state_changed)
         self.ethics_ls.append(line)
         self.layout_ethics.addWidget(line)
 
@@ -268,7 +285,7 @@ class MainWindow(QMainWindow):
         self.ethics_ls = self.ethics_ls[:-1]
 
     def add_ref(self):
-        line = QLineEdit()
+        line = new_line_edit(self.state_changed)
         self.ref_ls.append(line)
         self.layout_ref.addWidget(line)
 
@@ -280,7 +297,7 @@ class MainWindow(QMainWindow):
         self.ref_ls = self.ref_ls[:-1]
 
     def init_ui_derivative(self):
-        self.derivative = Derivative()
+        self.derivative = Derivative(self.state_changed)
         self.layout_derivative.addWidget(self.derivative)
 
     def clear_ui_derivative(self):

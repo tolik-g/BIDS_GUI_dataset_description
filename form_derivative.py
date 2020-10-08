@@ -1,11 +1,13 @@
 from PyQt5.QtWidgets import *
 from aux_classes import HLine
 import tooltips as tt
+from utils import new_line_edit, new_text_edit
 
 
 class Derivative(QWidget):
-    def __init__(self):
+    def __init__(self, state_change_callback):
         super().__init__()
+        self.state_change_cb = state_change_callback
 
         # main layout and sub layouts (for dynamic field insertion)
         self.layout_main = QGridLayout()
@@ -65,7 +67,7 @@ class Derivative(QWidget):
         self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
 
     def add_gen_by(self):
-        gen_by = GeneratedBy()
+        gen_by = GeneratedBy(self.state_change_cb)
         self.layout_gen_by.addWidget(gen_by)
         self.gen_by_ls.append(gen_by)
 
@@ -77,7 +79,7 @@ class Derivative(QWidget):
         self.gen_by_ls = self.gen_by_ls[:-1]
 
     def add_src_data(self):
-        src_data = SourceDatasets()
+        src_data = SourceDatasets(self.state_change_cb)
         self.layout_src_data.addWidget(src_data)
         self.src_data_ls.append(src_data)
 
@@ -102,10 +104,10 @@ class Derivative(QWidget):
         return data
 
 
-
 class GeneratedBy(QWidget):
-    def __init__(self):
+    def __init__(self, state_change_callback):
         super().__init__()
+        self.state_change_cb = state_change_callback
 
         # static widgets with stored user input data
         self.name_value = None
@@ -127,14 +129,14 @@ class GeneratedBy(QWidget):
         name_label = QLabel('Name')
         name_label.setToolTip(tt.gen_name)
         self.layout.addWidget(name_label, row, 0)
-        self.name_value = QLineEdit()
+        self.name_value = new_line_edit(self.state_change_cb)
         self.layout.addWidget(self.name_value, row, 1, 1, -1)
         row += 1
 
         # Version
         version_label = QLabel('Version')
         version_label.setToolTip(tt.gen_version)
-        self.version_value = QLineEdit()
+        self.version_value = new_line_edit(self.state_change_cb)
         self.layout.addWidget(version_label, row, 0)
         self.layout.addWidget(self.version_value, row, 1, 1, -1)
         row += 1
@@ -143,7 +145,7 @@ class GeneratedBy(QWidget):
         desc_label = QLabel('Description')
         desc_label.setToolTip(tt.gen_description)
         policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.desc_value = QPlainTextEdit()
+        self.desc_value = new_text_edit(self.state_change_cb)
         self.desc_value.setSizePolicy(policy)
         self.layout.addWidget(desc_label, row, 0)
         row += 1
@@ -153,7 +155,7 @@ class GeneratedBy(QWidget):
         # CodeURL
         url_label = QLabel('CodeURL')
         url_label.setToolTip(tt.gen_code_url)
-        self.url_value = QLineEdit()
+        self.url_value = new_line_edit(self.state_change_cb)
         self.layout.addWidget(url_label, row, 0)
         self.layout.addWidget(self.url_value, row, 1, 1, -1)
         row += 1
@@ -165,19 +167,19 @@ class GeneratedBy(QWidget):
         row += 1
 
         cont_type_label = QLabel('Type')
-        self.cont_type_value = QLineEdit()
+        self.cont_type_value = new_line_edit(self.state_change_cb)
         self.layout.addWidget(cont_type_label, row, 1)
         self.layout.addWidget(self.cont_type_value, row, 2, 1, -1)
         row += 1
 
         cont_tag_label = QLabel('Tag')
-        self.cont_tag_value = QLineEdit()
+        self.cont_tag_value = new_line_edit(self.state_change_cb)
         self.layout.addWidget(cont_tag_label, row, 1)
         self.layout.addWidget(self.cont_tag_value, row, 2, 1, -1)
         row += 1
 
         cont_uri_label = QLabel('URI')
-        self.cont_uri_value = QLineEdit()
+        self.cont_uri_value = new_line_edit(self.state_change_cb)
         self.layout.addWidget(cont_uri_label, row, 1)
         self.layout.addWidget(self.cont_uri_value, row, 2, 1, -1)
         row += 1
@@ -206,13 +208,16 @@ class GeneratedBy(QWidget):
 
 
 class SourceDatasets(QWidget):
-    def __init__(self):
+    def __init__(self, state_change_callback):
+
         # static widgets with stored user input data
         self.doi_value = None
         self.url_value = None
         self.version_value = None
 
         super().__init__()
+        self.state_change_cb = state_change_callback
+
         self.layout = QGridLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
@@ -222,21 +227,21 @@ class SourceDatasets(QWidget):
         row = 0
         # DOI
         doi_label = QLabel('DOI')
-        self.doi_value = QLineEdit()
+        self.doi_value = new_line_edit(self.state_change_cb)
         self.layout.addWidget(doi_label, row, 0)
         self.layout.addWidget(self.doi_value, row, 1, 1, -1)
         row += 1
 
         # URL
         url_label = QLabel('URL')
-        self.url_value = QLineEdit()
+        self.url_value = new_line_edit(self.state_change_cb)
         self.layout.addWidget(url_label, row, 0)
         self.layout.addWidget(self.url_value, row, 1, 1, -1)
         row += 1
 
         # Version
         version_label = QLabel('Version')
-        self.version_value = QLineEdit()
+        self.version_value = new_line_edit(self.state_change_cb)
         self.layout.addWidget(version_label, row, 0)
         self.layout.addWidget(self.version_value, row, 1, 1, -1)
         row += 1
