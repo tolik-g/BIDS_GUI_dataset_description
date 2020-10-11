@@ -1,13 +1,12 @@
 import json
 import ntpath
-
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
-
 import styles
 import tooltips as tt
 from form_derivative import Derivative
-from utils import new_line_edit, new_text_edit, new_combo_box
+from utils import new_line_edit, new_text_edit, new_combo_box, validate_data
 
 
 class MainWindow(QMainWindow):
@@ -25,6 +24,8 @@ class MainWindow(QMainWindow):
         self.doi_value = None
         self.curr_file_name = None
         self.curr_saved_label = None
+        self.is_valid_text = None
+        self.is_valid_icon = None
 
         # main layout and sub layouts (for dynamic field insertion).
         # layouts *_author, *_funding, *_ethics, *_ref are for dynamically added
@@ -203,6 +204,18 @@ class MainWindow(QMainWindow):
         self.layout_main.addLayout(self.layout_derivative, row, 0, 1, -1)
         row += 1
 
+        # validation form
+        valid_label = QLabel('Form validation')
+        self.is_valid_text = QLabel("Missing required fields")
+        self.is_valid_icon = QLabel()
+        self.is_valid_icon.setPixmap(QPixmap('icons/invalid.png'))
+
+        self.layout_main.addWidget(valid_label, row, 0)
+        self.layout_main.addWidget(self.is_valid_text, row, 1)
+        self.layout_main.addWidget(self.is_valid_icon, row, 2)
+
+        row += 1
+
         # save button, path selection section
         save_button = QPushButton("Save")
         save_as_button = QPushButton("Save as")
@@ -212,13 +225,25 @@ class MainWindow(QMainWindow):
         self.layout_main.addWidget(self.curr_saved_label, row, 3)
         save_as_button.clicked.connect(self.save_as)
         save_button.clicked.connect(self.save_data_as_json)
-
         row += 1
 
         # spacer item to push content to top
         self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
 
+    def handle_form_valid_change(self):
+        if self.is_valid_text is None:
+            return
+
+        if validate_data(self.get_data()):
+            self.is_valid_icon.setPixmap(QPixmap('icons/valid.png'))
+            self.is_valid_text.setText("Valid")
+        else:
+            self.is_valid_icon.setPixmap(QPixmap('icons/invalid.png'))
+            self.is_valid_text.setText("Missing required fields")
+
     def state_changed(self):
+        self.handle_form_valid_change()
+
         if not self.curr_file_name:
             return
 
