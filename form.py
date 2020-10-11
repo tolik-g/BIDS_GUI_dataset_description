@@ -239,8 +239,9 @@ class MainWindow(QMainWindow):
         options |= QFileDialog.DontUseNativeDialog
         file_name, _ = QFileDialog.getSaveFileName(self, "Save as", "",
                                                    "All Files (*);;Text Files (*.txt)", options=options)
-        if not file_name:
+        if not file_name or file_name == '':
             print('failed to save new file')
+            return
 
         if not file_name.endswith('.json'):
             file_name += '.json'
@@ -330,6 +331,3 @@ class MainWindow(QMainWindow):
             data['GeneratedBy'] = data_derivative['GeneratedBy']
             data['SourceDatasets'] = data_derivative['SourceDatasets']
         return data
-
-    def test_get_data(self):
-        print(self.get_data())
