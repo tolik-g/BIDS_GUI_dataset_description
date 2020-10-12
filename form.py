@@ -24,6 +24,7 @@ class MainWindow(QMainWindow):
         self.doi_value = None
         self.curr_file_name = None
         self.curr_saved_label = None
+        self.save_button = None
         self.is_valid_text = None
         self.is_valid_icon = None
 
@@ -218,21 +219,21 @@ class MainWindow(QMainWindow):
         row += 1
 
         # save button, path selection section
-        save_button = QPushButton("Save")
         save_as_button = QPushButton("Save as")
+        self.save_button = QPushButton("Save")
         self.curr_saved_label = QLabel('')
-        self.layout_main.addWidget(save_button, row, 1)
+        self.layout_main.addWidget(self.save_button, row, 1)
         self.layout_main.addWidget(save_as_button, row, 2)
         self.layout_main.addWidget(self.curr_saved_label, row, 3)
         save_as_button.clicked.connect(self.save_as)
-        save_button.clicked.connect(self.save_data_as_json)
+        self.save_button.clicked.connect(self.save_data_as_json)
+        self.save_button.setDisabled(True)
         row += 1
 
         # spacer item to push content to top
         self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
         col_count = self.layout_main.columnCount()
         self.layout_main.setColumnStretch(col_count-1, 1)
-
 
     def handle_form_valid_change(self):
         if self.is_valid_text is None:
@@ -254,10 +255,6 @@ class MainWindow(QMainWindow):
         self.curr_saved_label.setText(ntpath.basename(self.curr_file_name) + ' *')
 
     def save_data_as_json(self):
-        if not self.curr_file_name:
-            self.save_as()
-            return
-
         with open(self.curr_file_name, 'w', encoding='utf-8') as f:
             json.dump(self.get_data(), f, indent=4)
 
@@ -274,6 +271,8 @@ class MainWindow(QMainWindow):
 
         if not file_name.endswith('.json'):
             file_name += '.json'
+
+        self.save_button.setDisabled(False)
         self.curr_file_name = file_name
         self.save_data_as_json()
 
