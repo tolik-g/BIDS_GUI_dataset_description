@@ -3,6 +3,8 @@ import ntpath
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
+from qtpy import QtGui
+
 import styles
 import tooltips as tt
 from form_derivative import Derivative
@@ -63,6 +65,7 @@ class MainWindow(QMainWindow):
 
         # non application-logic setup
         self.setWindowTitle('Dataset Description Generator')
+        self.setWindowIcon(QtGui.QIcon('Icons/title.png'))
         self.setStyleSheet(styles.STYLE)
 
     def init_ui(self):
