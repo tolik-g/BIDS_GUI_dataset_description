@@ -73,6 +73,7 @@ class MainWindow(QMainWindow):
         """
         row = 0  # for main layout row count
         policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        self.layout_main.setColumnStretch(4, 1)
 
         # Name (Dataset name)
         name_label = QLabel('Name')
@@ -229,6 +230,9 @@ class MainWindow(QMainWindow):
 
         # spacer item to push content to top
         self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
+        col_count = self.layout_main.columnCount()
+        self.layout_main.setColumnStretch(col_count-1, 1)
+
 
     def handle_form_valid_change(self):
         if self.is_valid_text is None:
