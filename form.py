@@ -1,17 +1,25 @@
 import json
 import ntpath
 from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
-from qtpy import QtGui
-
-import styles
 import tooltips as tt
 from form_derivative import Derivative
 from utils import new_line_edit, new_text_edit, new_combo_box, validate_data
 
 
-class MainWindow(QMainWindow):
+class FormScroll(QScrollArea):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.form = Form()
+        self.setWidget(self.form)
+        self.setWidgetResizable(True)
+
+
+class Form(QWidget):
+    modified = Signal()
+
     def __init__(self):
         super().__init__()
 
@@ -50,23 +58,9 @@ class MainWindow(QMainWindow):
         self.author_ls = []
         self.gen_by_ls = []
 
-        # main widget scrollable setup
-        self.widget = QWidget()
-        self.widget.setLayout(self.layout_main)
-        self.scroll_area = QScrollArea(self)
-        self.scroll_area.setWidget(self.widget)
-        self.scroll_area.setWidgetResizable(True)
-        self.setCentralWidget(self.scroll_area)
-
         # UI setup
-        self.setMinimumSize(600, 800)
         self.init_ui()
-        self.show()
-
-        # non application-logic setup
-        self.setWindowTitle('Dataset Description Generator')
-        self.setWindowIcon(QtGui.QIcon('Icons/title.png'))
-        self.setStyleSheet(styles.STYLE)
+        self.setLayout(self.layout_main)
 
     def init_ui(self):
         """
@@ -83,7 +77,7 @@ class MainWindow(QMainWindow):
         name_label = QLabel('Name')
         name_label.setToolTip(tt.name)
         self.layout_main.addWidget(name_label, row, 0)
-        self.name_value = new_line_edit(self.state_changed)
+        self.name_value = new_line_edit(self.modified.emit)
 
         self.layout_main.addWidget(self.name_value, row, 1, 1, 4)
         row += 1
@@ -112,7 +106,7 @@ class MainWindow(QMainWindow):
         # License
         license_label = QLabel('License')
         license_label.setToolTip(tt.dataset_license)
-        self.license_value = new_combo_box(self.state_changed)
+        self.license_value = new_combo_box(self.modified.emit)
         self.license_value.addItems(['unspecified', 'PD', 'PDDL', 'CC0'])
         self.license_value.setItemData(1, tt.license_pd, Qt.ToolTipRole)
         self.license_value.setItemData(2, tt.license_pddl, Qt.ToolTipRole)
@@ -138,7 +132,7 @@ class MainWindow(QMainWindow):
         # Acknowledgements
         ack_label = QLabel('Acknowledgements')
         ack_label.setToolTip(tt.acknowledgements)
-        self.ack_value = new_text_edit(self.state_changed)
+        self.ack_value = new_text_edit(self.modified.emit)
         self.ack_value.setSizePolicy(policy)
         self.layout_main.addWidget(ack_label, row, 0)
         row += 1
@@ -148,7 +142,7 @@ class MainWindow(QMainWindow):
         # HowToAcknowledge
         how_to_ack_label = QLabel('HowToAcknowledge')
         how_to_ack_label.setToolTip(tt.how_to_ack)
-        self.how_to_ack_value = new_text_edit(self.state_changed)
+        self.how_to_ack_value = new_text_edit(self.modified.emit)
         self.how_to_ack_value.setSizePolicy(policy)
         self.layout_main.addWidget(how_to_ack_label, row, 0)
         row += 1
@@ -200,7 +194,7 @@ class MainWindow(QMainWindow):
         # DatasetDOI
         doi_label = QLabel('DatasetDOI')
         doi_label.setToolTip(tt.dataset_doi)
-        self.doi_value = new_line_edit(self.state_changed)
+        self.doi_value = new_line_edit(self.modified.emit)
         self.layout_main.addWidget(doi_label, row, 0)
         self.layout_main.addWidget(self.doi_value, row, 1, 1, -1)
         row += 1
@@ -236,38 +230,22 @@ class MainWindow(QMainWindow):
         # spacer item to push content to top
         self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
         col_count = self.layout_main.columnCount()
-        self.layout_main.setColumnStretch(col_count-1, 1)
+        self.layout_main.setColumnStretch(col_count - 1, 1)
 
-    def handle_form_valid_change(self):
-        if self.is_valid_text is None:
-            return
-
-        if validate_data(self.get_data()):
-            self.is_valid_icon.setPixmap(QPixmap('icons/valid.png'))
-            self.is_valid_text.setText("Valid")
-        else:
-            self.is_valid_icon.setPixmap(QPixmap('icons/invalid.png'))
-            self.is_valid_text.setText("Missing required fields")
-
-    def state_changed(self):
-        self.handle_form_valid_change()
-
-        if not self.curr_file_name:
-            return
-
-        self.curr_saved_label.setText(ntpath.basename(self.curr_file_name) + ' *')
 
     def save_data_as_json(self):
         with open(self.curr_file_name, 'w', encoding='utf-8') as f:
             json.dump(self.get_data(), f, indent=4)
 
-        self.curr_saved_label.setText(ntpath.basename(self.curr_file_name) + ' saved')
+        self.curr_saved_label.setText(
+            ntpath.basename(self.curr_file_name) + ' saved')
 
     def save_as(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         file_name, _ = QFileDialog.getSaveFileName(self, "Save as", "",
-                                                   "All Files (*);;Text Files (*.txt)", options=options)
+                                                   "All Files (*);;Text Files (*.txt)",
+                                                   options=options)
         if not file_name or file_name == '':
             print('failed to save new file')
             return
@@ -280,7 +258,7 @@ class MainWindow(QMainWindow):
         self.save_data_as_json()
 
     def add_author(self):
-        line = new_line_edit(self.state_changed)
+        line = new_line_edit(self.modified.emit)
         self.author_ls.append(line)
         self.layout_author.addWidget(line)
 
@@ -292,7 +270,7 @@ class MainWindow(QMainWindow):
         self.author_ls = self.author_ls[:-1]
 
     def add_funding(self):
-        line = new_line_edit(self.state_changed)
+        line = new_line_edit(self.modified.emit)
         self.funding_ls.append(line)
         self.layout_funding.addWidget(line)
 
@@ -304,7 +282,7 @@ class MainWindow(QMainWindow):
         self.funding_ls = self.funding_ls[:-1]
 
     def add_ethics(self):
-        line = new_line_edit(self.state_changed)
+        line = new_line_edit(self.modified.emit)
         self.ethics_ls.append(line)
         self.layout_ethics.addWidget(line)
 
@@ -316,7 +294,7 @@ class MainWindow(QMainWindow):
         self.ethics_ls = self.ethics_ls[:-1]
 
     def add_ref(self):
-        line = new_line_edit(self.state_changed)
+        line = new_line_edit(self.modified.emit)
         self.ref_ls.append(line)
         self.layout_ref.addWidget(line)
 
@@ -328,7 +306,7 @@ class MainWindow(QMainWindow):
         self.ref_ls = self.ref_ls[:-1]
 
     def init_ui_derivative(self):
-        self.derivative = Derivative(self.state_changed)
+        self.derivative = Derivative(self.modified.emit)
         self.layout_derivative.addWidget(self.derivative)
 
     def clear_ui_derivative(self):
@@ -362,3 +340,5 @@ class MainWindow(QMainWindow):
             data['GeneratedBy'] = data_derivative['GeneratedBy']
             data['SourceDatasets'] = data_derivative['SourceDatasets']
         return data
+
+
