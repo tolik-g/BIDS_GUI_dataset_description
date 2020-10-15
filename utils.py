@@ -54,8 +54,8 @@ def remove_empty_fields(data):
         data.pop('License')
     if not data['Authors']:
         data.pop('Authors')
-    if data['Acknowledgments'] == '':
-        data.pop('Acknowledgments')
+    if data['Acknowledgements'] == '':
+        data.pop('Acknowledgements')
     if data['HowToAcknowledge'] == '':
         data.pop('HowToAcknowledge')
     if not data['Funding']:

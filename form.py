@@ -1,5 +1,3 @@
-import json
-import ntpath
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal as Signal
 from PyQt5.QtGui import QPixmap
@@ -32,7 +30,6 @@ class Form(QWidget):
         self.ack_value = None
         self.how_to_ack_value = None
         self.doi_value = None
-        self.curr_file_name = None
         self.curr_saved_label = None
         self.save_button = None
         self.is_valid_text = None
@@ -203,59 +200,10 @@ class Form(QWidget):
         self.layout_main.addLayout(self.layout_derivative, row, 0, 1, -1)
         row += 1
 
-        # validation form
-        valid_label = QLabel('Form validation')
-        self.is_valid_text = QLabel("Missing required fields")
-        self.is_valid_icon = QLabel()
-        self.is_valid_icon.setPixmap(QPixmap('icons/invalid.png'))
-
-        self.layout_main.addWidget(valid_label, row, 0)
-        self.layout_main.addWidget(self.is_valid_text, row, 1)
-        self.layout_main.addWidget(self.is_valid_icon, row, 2)
-
-        row += 1
-
-        # save button, path selection section
-        save_as_button = QPushButton("Save as")
-        self.save_button = QPushButton("Save")
-        self.curr_saved_label = QLabel('')
-        self.layout_main.addWidget(self.save_button, row, 1)
-        self.layout_main.addWidget(save_as_button, row, 2)
-        self.layout_main.addWidget(self.curr_saved_label, row, 3)
-        save_as_button.clicked.connect(self.save_as)
-        self.save_button.clicked.connect(self.save_data_as_json)
-        self.save_button.setDisabled(True)
-        row += 1
-
         # spacer item to push content to top
         self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
         col_count = self.layout_main.columnCount()
         self.layout_main.setColumnStretch(col_count - 1, 1)
-
-
-    def save_data_as_json(self):
-        with open(self.curr_file_name, 'w', encoding='utf-8') as f:
-            json.dump(self.get_data(), f, indent=4)
-
-        self.curr_saved_label.setText(
-            ntpath.basename(self.curr_file_name) + ' saved')
-
-    def save_as(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getSaveFileName(self, "Save as", "",
-                                                   "All Files (*);;Text Files (*.txt)",
-                                                   options=options)
-        if not file_name or file_name == '':
-            print('failed to save new file')
-            return
-
-        if not file_name.endswith('.json'):
-            file_name += '.json'
-
-        self.save_button.setDisabled(False)
-        self.curr_file_name = file_name
-        self.save_data_as_json()
 
     def add_author(self):
         line = new_line_edit(self.modified.emit)

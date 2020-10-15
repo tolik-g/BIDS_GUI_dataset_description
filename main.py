@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
         self.form_widget.setSizePolicy(policy)
         self.form_widget.form.modified.connect(self.handle_form_modified)
         self.layout.addWidget(self.form_widget, 0, 0, 1, -1)
-        self.save_control = SaveController()
+        self.save_control = SaveController(self.form_widget.form.get_data)
         self.layout.addWidget(self.save_control, 1, 0, 1, -1)
         self.layout.setRowStretch(0, 1)
         self.layout.setColumnStretch(0, 1)
@@ -39,5 +39,3 @@ if __name__ == "__main__":
     app = QApplication([])
     window = MainWindow()
     sys.exit(app.exec())
-
-
