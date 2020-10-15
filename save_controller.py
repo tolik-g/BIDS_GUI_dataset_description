@@ -41,7 +41,6 @@ class SaveController(QWidget):
         else:
             self.is_valid_icon.setPixmap(QPixmap('icons/invalid.png'))
             self.is_valid_text.setText("Missing required fields")
-            self.save_button.setDisabled(True)
 
         self.save_button.setDisabled(not valid or not self.curr_file_name)
         self.save_as_button.setDisabled(not valid)
