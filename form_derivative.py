@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import *
-from aux_classes import HLine
 import tooltips as tt
-from utils import new_line_edit, new_text_edit
+from utils import new_line_edit, new_text_edit, HLine
 
 
 class Derivative(QWidget):

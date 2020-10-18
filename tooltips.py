@@ -1,3 +1,7 @@
+"""
+this file contains tooltips messages values
+"""
+
 name = '''REQUIRED. Name of the dataset.'''
 
 bids_version = '''REQUIRED. The version of the BIDS standard that was used.'''

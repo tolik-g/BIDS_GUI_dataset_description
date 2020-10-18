@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QLineEdit, QPlainTextEdit, QComboBox
+from PyQt5.QtWidgets import QLineEdit, QPlainTextEdit, QComboBox, QFrame
 
 
 def new_line_edit(cb):
@@ -97,3 +97,9 @@ def remove_empty_fields(data):
             data.pop('SourceDatasets')
     return data
 
+
+class HLine(QFrame):
+    def __init__(self):
+        super().__init__()
+        self.setFrameShape(QFrame.HLine)
+        self.setFrameShadow(QFrame.Sunken)

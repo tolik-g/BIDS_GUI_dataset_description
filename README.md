@@ -9,4 +9,3 @@ This is a GUI variant of BIDS Dataset Description generator
 
 ### RUNNING THE PROJECT
     run "main.py"
-
