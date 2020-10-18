@@ -1,12 +1,19 @@
 from PyQt5.QtWidgets import *
-import tooltips as tt
+from PyQt5.QtCore import pyqtSignal as Signal
 from utils import new_line_edit, new_text_edit, HLine
+import tooltips as tt
 
 
 class Derivative(QWidget):
-    def __init__(self, state_change_callback):
+    """
+    this widget has fields relevant to a dataset description of type derivative,
+    it is a logical extension to the form.
+    """
+    modified = Signal()
+
+    def __init__(self):
         super().__init__()
-        self.state_change_cb = state_change_callback
+        self.state_change_cb = None
 
         # main layout and sub layouts (for dynamic field insertion)
         self.layout_main = QGridLayout()
@@ -22,6 +29,12 @@ class Derivative(QWidget):
         self.add_gen_by()
 
     def init_ui(self):
+        """
+        Initialize UI components.
+        Naming conventions for the labels are taken from official BIDS
+        specification (v1.4.0).
+        :return:
+        """
         self.layout_main.setContentsMargins(0, 0, 0, 0)
         row = 0
         # section separation line
@@ -66,21 +79,37 @@ class Derivative(QWidget):
         self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
 
     def add_gen_by(self):
-        gen_by = GeneratedBy(self.state_change_cb)
+        """
+        add a GeneratedBy section
+        :return:
+        """
+        gen_by = GeneratedBy()
+        gen_by.modified.connect(self.modified.emit)
         self.layout_gen_by.addWidget(gen_by)
         self.gen_by_ls.append(gen_by)
+        self.modified.emit()
 
     def remove_gen_by(self):
+        """
+        remove a GeneratedBy section.
+        there is a requirement to have at least one GeneratedBy section if class
+        is initiated, therefore remove won't work if there is a single instance
+        of GeneratedBy section
+        :return:
+        """
         if len(self.gen_by_ls) == 1:
             return
         self.layout_gen_by.removeWidget(self.gen_by_ls[-1])
         self.gen_by_ls[-1].deleteLater()
         self.gen_by_ls = self.gen_by_ls[:-1]
+        self.modified.emit()
 
     def add_src_data(self):
-        src_data = SourceDatasets(self.state_change_cb)
+        src_data = SourceDatasets()
+        src_data.modified.connect(self.modified.emit)
         self.layout_src_data.addWidget(src_data)
         self.src_data_ls.append(src_data)
+        self.modified.emit()
 
     def remove_src_data(self):
         if len(self.src_data_ls) == 0:
@@ -88,6 +117,7 @@ class Derivative(QWidget):
         self.layout_src_data.removeWidget(self.src_data_ls[-1])
         self.src_data_ls[-1].deleteLater()
         self.src_data_ls = self.src_data_ls[:-1]
+        self.modified.emit()
 
     def get_data(self):
         gen_by_data_ls = []
@@ -104,9 +134,10 @@ class Derivative(QWidget):
 
 
 class GeneratedBy(QWidget):
-    def __init__(self, state_change_callback):
+    modified = Signal()
+
+    def __init__(self):
         super().__init__()
-        self.state_change_cb = state_change_callback
 
         # static widgets with stored user input data
         self.name_value = None
@@ -128,14 +159,14 @@ class GeneratedBy(QWidget):
         name_label = QLabel('Name')
         name_label.setToolTip(tt.gen_name)
         self.layout.addWidget(name_label, row, 0)
-        self.name_value = new_line_edit(self.state_change_cb)
+        self.name_value = new_line_edit(self.modified.emit)
         self.layout.addWidget(self.name_value, row, 1, 1, -1)
         row += 1
 
         # Version
         version_label = QLabel('Version')
         version_label.setToolTip(tt.gen_version)
-        self.version_value = new_line_edit(self.state_change_cb)
+        self.version_value = new_line_edit(self.modified.emit)
         self.layout.addWidget(version_label, row, 0)
         self.layout.addWidget(self.version_value, row, 1, 1, -1)
         row += 1
@@ -144,7 +175,7 @@ class GeneratedBy(QWidget):
         desc_label = QLabel('Description')
         desc_label.setToolTip(tt.gen_description)
         policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.desc_value = new_text_edit(self.state_change_cb)
+        self.desc_value = new_text_edit(self.modified.emit)
         self.desc_value.setSizePolicy(policy)
         self.layout.addWidget(desc_label, row, 0)
         row += 1
@@ -154,7 +185,7 @@ class GeneratedBy(QWidget):
         # CodeURL
         url_label = QLabel('CodeURL')
         url_label.setToolTip(tt.gen_code_url)
-        self.url_value = new_line_edit(self.state_change_cb)
+        self.url_value = new_line_edit(self.modified.emit)
         self.layout.addWidget(url_label, row, 0)
         self.layout.addWidget(self.url_value, row, 1, 1, -1)
         row += 1
@@ -166,19 +197,19 @@ class GeneratedBy(QWidget):
         row += 1
 
         cont_type_label = QLabel('Type')
-        self.cont_type_value = new_line_edit(self.state_change_cb)
+        self.cont_type_value = new_line_edit(self.modified.emit)
         self.layout.addWidget(cont_type_label, row, 1)
         self.layout.addWidget(self.cont_type_value, row, 2, 1, -1)
         row += 1
 
         cont_tag_label = QLabel('Tag')
-        self.cont_tag_value = new_line_edit(self.state_change_cb)
+        self.cont_tag_value = new_line_edit(self.modified.emit)
         self.layout.addWidget(cont_tag_label, row, 1)
         self.layout.addWidget(self.cont_tag_value, row, 2, 1, -1)
         row += 1
 
         cont_uri_label = QLabel('URI')
-        self.cont_uri_value = new_line_edit(self.state_change_cb)
+        self.cont_uri_value = new_line_edit(self.modified.emit)
         self.layout.addWidget(cont_uri_label, row, 1)
         self.layout.addWidget(self.cont_uri_value, row, 2, 1, -1)
         row += 1
@@ -207,15 +238,15 @@ class GeneratedBy(QWidget):
 
 
 class SourceDatasets(QWidget):
-    def __init__(self, state_change_callback):
+    modified = Signal()
+
+    def __init__(self):
+        super().__init__()
 
         # static widgets with stored user input data
         self.doi_value = None
         self.url_value = None
         self.version_value = None
-
-        super().__init__()
-        self.state_change_cb = state_change_callback
 
         self.layout = QGridLayout()
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -226,21 +257,21 @@ class SourceDatasets(QWidget):
         row = 0
         # DOI
         doi_label = QLabel('DOI')
-        self.doi_value = new_line_edit(self.state_change_cb)
+        self.doi_value = new_line_edit(self.modified.emit)
         self.layout.addWidget(doi_label, row, 0)
         self.layout.addWidget(self.doi_value, row, 1, 1, -1)
         row += 1
 
         # URL
         url_label = QLabel('URL')
-        self.url_value = new_line_edit(self.state_change_cb)
+        self.url_value = new_line_edit(self.modified.emit)
         self.layout.addWidget(url_label, row, 0)
         self.layout.addWidget(self.url_value, row, 1, 1, -1)
         row += 1
 
         # Version
         version_label = QLabel('Version')
-        self.version_value = new_line_edit(self.state_change_cb)
+        self.version_value = new_line_edit(self.modified.emit)
         self.layout.addWidget(version_label, row, 0)
         self.layout.addWidget(self.version_value, row, 1, 1, -1)
         row += 1

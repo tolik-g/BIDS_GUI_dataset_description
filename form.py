@@ -1,13 +1,15 @@
-from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSignal as Signal
-from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
-import tooltips as tt
+from PyQt5.QtCore import Qt
 from form_derivative import Derivative
-from utils import new_line_edit, new_text_edit, new_combo_box, validate_data
+from utils import new_line_edit, new_text_edit, new_combo_box
+import tooltips as tt
 
 
 class FormScroll(QScrollArea):
+    """
+    variation of the form widget in a scroll area
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.form = Form()
@@ -16,6 +18,10 @@ class FormScroll(QScrollArea):
 
 
 class Form(QWidget):
+    """
+    this is the root form, all the fields to be filled by the user are on this
+    level, or in widgets instantiated in this class.
+    """
     modified = Signal()
 
     def __init__(self):
@@ -254,14 +260,17 @@ class Form(QWidget):
         self.ref_ls = self.ref_ls[:-1]
 
     def init_ui_derivative(self):
-        self.derivative = Derivative(self.modified.emit)
+        self.derivative = Derivative()
+        self.derivative.modified.connect(self.modified.emit)
         self.layout_derivative.addWidget(self.derivative)
+        self.modified.emit()
 
     def clear_ui_derivative(self):
         if self.derivative is None:
             return
         self.derivative.deleteLater()
         self.derivative = None
+        self.modified.emit()
 
     def dataset_type_handler(self, index):
         if index == 2:
