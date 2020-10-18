@@ -22,6 +22,7 @@ class Form(QWidget):
     this is the root form, all the fields to be filled by the user are on this
     level, or in widgets instantiated in this class.
     """
+    # all required fields of the form should emit the modified signal
     modified = Signal()
 
     def __init__(self):
@@ -42,17 +43,17 @@ class Form(QWidget):
         self.is_valid_icon = None
 
         # main layout and sub layouts (for dynamic field insertion).
-        # layouts *_author, *_funding, *_ethics, *_ref are for dynamically added
+        # layouts author, funding, ethics and ref are for dynamically added
         # fields in the main layout.
-        # layout *_derivative is for toggled derivative related fields.
-        self.layout_main = QGridLayout()
-        self.layout_author = QVBoxLayout()
-        self.layout_funding = QVBoxLayout()
-        self.layout_ethics = QVBoxLayout()
-        self.layout_ref = QVBoxLayout()
-        self.layout_derivative = QGridLayout()
-        self.layout_src_data = QGridLayout()
-        self.layout_gen_by = QVBoxLayout()
+        # layout derivative is for toggled BIDS derivative related fields.
+        self.main_layout = QGridLayout()
+        self.author_layout = QVBoxLayout()
+        self.funding_layout = QVBoxLayout()
+        self.ethics_layout = QVBoxLayout()
+        self.ref_layout = QVBoxLayout()
+        self.derivative_layout = QGridLayout()
+        self.src_data_layout = QGridLayout()
+        self.gen_by_layout = QVBoxLayout()
 
         # lists of widgets for dynamically added (and subtracted) fields
         self.ref_ls = []
@@ -63,7 +64,7 @@ class Form(QWidget):
 
         # UI setup
         self.init_ui()
-        self.setLayout(self.layout_main)
+        self.setLayout(self.main_layout)
 
     def init_ui(self):
         """
@@ -74,15 +75,15 @@ class Form(QWidget):
         """
         row = 0  # for main layout row count
         policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        self.layout_main.setColumnStretch(4, 1)
+        # set stretch to enforce last column take available space
+        self.main_layout.setColumnStretch(4, 1)
 
         # Name (Dataset name)
         name_label = QLabel('Name')
         name_label.setToolTip(tt.name)
-        self.layout_main.addWidget(name_label, row, 0)
         self.name_value = new_line_edit(self.modified.emit)
-
-        self.layout_main.addWidget(self.name_value, row, 1, 1, 4)
+        self.main_layout.addWidget(name_label, row, 0)
+        self.main_layout.addWidget(self.name_value, row, 1, 1, 4)
         row += 1
 
         # BIDSVersion
@@ -91,8 +92,8 @@ class Form(QWidget):
         self.bids_ver_value = QComboBox()
         self.bids_ver_value.addItems(['1.4.0'])
         self.bids_ver_value.setDisabled(True)  # to be modified in the future
-        self.layout_main.addWidget(bids_ver_label, row, 0)
-        self.layout_main.addWidget(self.bids_ver_value, row, 1, 1, 4)
+        self.main_layout.addWidget(bids_ver_label, row, 0)
+        self.main_layout.addWidget(self.bids_ver_value, row, 1, 1, 4)
         row += 1
 
         # DatasetType
@@ -102,8 +103,8 @@ class Form(QWidget):
         self.data_type_value.addItems(['unspecified', 'raw', 'derivative'])
         self.data_type_value.currentIndexChanged.connect(
             self.dataset_type_handler)
-        self.layout_main.addWidget(data_type_label, row, 0)
-        self.layout_main.addWidget(self.data_type_value, row, 1, 1, 4)
+        self.main_layout.addWidget(data_type_label, row, 0)
+        self.main_layout.addWidget(self.data_type_value, row, 1, 1, 4)
         row += 1
 
         # License
@@ -114,8 +115,8 @@ class Form(QWidget):
         self.license_value.setItemData(1, tt.license_pd, Qt.ToolTipRole)
         self.license_value.setItemData(2, tt.license_pddl, Qt.ToolTipRole)
         self.license_value.setItemData(3, tt.license_cc0, Qt.ToolTipRole)
-        self.layout_main.addWidget(license_label, row, 0)
-        self.layout_main.addWidget(self.license_value, row, 1, 1, 4)
+        self.main_layout.addWidget(license_label, row, 0)
+        self.main_layout.addWidget(self.license_value, row, 1, 1, 4)
         row += 1
 
         # Authors
@@ -125,11 +126,11 @@ class Form(QWidget):
         author_button_add.clicked.connect(self.add_author)
         author_button_remove = QPushButton('-')
         author_button_remove.clicked.connect(self.remove_author)
-        self.layout_main.addWidget(author_label, row, 0)
-        self.layout_main.addWidget(author_button_remove, row, 1)
-        self.layout_main.addWidget(author_button_add, row, 2)
+        self.main_layout.addWidget(author_label, row, 0)
+        self.main_layout.addWidget(author_button_remove, row, 1)
+        self.main_layout.addWidget(author_button_add, row, 2)
         row += 1
-        self.layout_main.addLayout(self.layout_author, row, 0, 1, -1)
+        self.main_layout.addLayout(self.author_layout, row, 0, 1, -1)
         row += 1
 
         # Acknowledgements
@@ -137,9 +138,9 @@ class Form(QWidget):
         ack_label.setToolTip(tt.acknowledgements)
         self.ack_value = new_text_edit(self.modified.emit)
         self.ack_value.setSizePolicy(policy)
-        self.layout_main.addWidget(ack_label, row, 0)
+        self.main_layout.addWidget(ack_label, row, 0)
         row += 1
-        self.layout_main.addWidget(self.ack_value, row, 0, 1, -1)
+        self.main_layout.addWidget(self.ack_value, row, 0, 1, -1)
         row += 1
 
         # HowToAcknowledge
@@ -147,9 +148,9 @@ class Form(QWidget):
         how_to_ack_label.setToolTip(tt.how_to_ack)
         self.how_to_ack_value = new_text_edit(self.modified.emit)
         self.how_to_ack_value.setSizePolicy(policy)
-        self.layout_main.addWidget(how_to_ack_label, row, 0)
+        self.main_layout.addWidget(how_to_ack_label, row, 0)
         row += 1
-        self.layout_main.addWidget(self.how_to_ack_value, row, 0, 1, -1)
+        self.main_layout.addWidget(self.how_to_ack_value, row, 0, 1, -1)
         row += 1
 
         # Funding
@@ -159,11 +160,11 @@ class Form(QWidget):
         funding_button_add.clicked.connect(self.add_funding)
         funding_button_remove = QPushButton('-')
         funding_button_remove.clicked.connect(self.remove_funding)
-        self.layout_main.addWidget(funding_label, row, 0)
-        self.layout_main.addWidget(funding_button_remove, row, 1)
-        self.layout_main.addWidget(funding_button_add, row, 2)
+        self.main_layout.addWidget(funding_label, row, 0)
+        self.main_layout.addWidget(funding_button_remove, row, 1)
+        self.main_layout.addWidget(funding_button_add, row, 2)
         row += 1
-        self.layout_main.addLayout(self.layout_funding, row, 0, 1, -1)
+        self.main_layout.addLayout(self.funding_layout, row, 0, 1, -1)
         row += 1
 
         # EthicsApprovals
@@ -173,11 +174,11 @@ class Form(QWidget):
         ethics_button_add.clicked.connect(self.add_ethics)
         ethics_button_remove = QPushButton('-')
         ethics_button_remove.clicked.connect(self.remove_ethics)
-        self.layout_main.addWidget(ethics_label, row, 0)
-        self.layout_main.addWidget(ethics_button_remove, row, 1)
-        self.layout_main.addWidget(ethics_button_add, row, 2)
+        self.main_layout.addWidget(ethics_label, row, 0)
+        self.main_layout.addWidget(ethics_button_remove, row, 1)
+        self.main_layout.addWidget(ethics_button_add, row, 2)
         row += 1
-        self.layout_main.addLayout(self.layout_ethics, row, 0, 1, -1)
+        self.main_layout.addLayout(self.ethics_layout, row, 0, 1, -1)
         row += 1
 
         # ReferencesAndLinks
@@ -187,85 +188,125 @@ class Form(QWidget):
         ref_button_add.clicked.connect(self.add_ref)
         ref_button_remove = QPushButton('-')
         ref_button_remove.clicked.connect(self.remove_ref)
-        self.layout_main.addWidget(ref_label, row, 0)
-        self.layout_main.addWidget(ref_button_remove, row, 1)
-        self.layout_main.addWidget(ref_button_add, row, 2)
+        self.main_layout.addWidget(ref_label, row, 0)
+        self.main_layout.addWidget(ref_button_remove, row, 1)
+        self.main_layout.addWidget(ref_button_add, row, 2)
         row += 1
-        self.layout_main.addLayout(self.layout_ref, row, 0, 1, -1)
+        self.main_layout.addLayout(self.ref_layout, row, 0, 1, -1)
         row += 1
 
         # DatasetDOI
         doi_label = QLabel('DatasetDOI')
         doi_label.setToolTip(tt.dataset_doi)
         self.doi_value = new_line_edit(self.modified.emit)
-        self.layout_main.addWidget(doi_label, row, 0)
-        self.layout_main.addWidget(self.doi_value, row, 1, 1, -1)
+        self.main_layout.addWidget(doi_label, row, 0)
+        self.main_layout.addWidget(self.doi_value, row, 1, 1, -1)
         row += 1
 
         # Derivative sections (fields dynamically added to layout)
-        self.layout_main.addLayout(self.layout_derivative, row, 0, 1, -1)
+        self.main_layout.addLayout(self.derivative_layout, row, 0, 1, -1)
         row += 1
 
         # spacer item to push content to top
-        self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
-        col_count = self.layout_main.columnCount()
-        self.layout_main.setColumnStretch(col_count - 1, 1)
+        self.main_layout.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
+        col_count = self.main_layout.columnCount()
+        self.main_layout.setColumnStretch(col_count - 1, 1)
 
     def add_author(self):
+        """
+        adds line edit to the layout (under Author)
+        :return:
+        """
         line = new_line_edit(self.modified.emit)
         self.author_ls.append(line)
-        self.layout_author.addWidget(line)
+        self.author_layout.addWidget(line)
 
     def remove_author(self):
+        """
+        removes the last line edit from layout (under Author)
+        :return:
+        """
         if len(self.author_ls) == 0:
             return
-        self.layout_author.removeWidget(self.author_ls[-1])
+        self.author_layout.removeWidget(self.author_ls[-1])
         self.author_ls[-1].deleteLater()
         self.author_ls = self.author_ls[:-1]
 
     def add_funding(self):
+        """
+        adds line edit to the layout (under Funding)
+        :return:
+        """
         line = new_line_edit(self.modified.emit)
         self.funding_ls.append(line)
-        self.layout_funding.addWidget(line)
+        self.funding_layout.addWidget(line)
 
     def remove_funding(self):
+        """
+        removes the last line edit from layout (under Funding)
+        :return:
+        """
         if len(self.funding_ls) == 0:
             return
-        self.layout_funding.removeWidget(self.funding_ls[-1])
+        self.funding_layout.removeWidget(self.funding_ls[-1])
         self.funding_ls[-1].deleteLater()
         self.funding_ls = self.funding_ls[:-1]
 
     def add_ethics(self):
+        """
+        adds line edit to the layout (under EthicsApprovals)
+        :return:
+        """
         line = new_line_edit(self.modified.emit)
         self.ethics_ls.append(line)
-        self.layout_ethics.addWidget(line)
+        self.ethics_layout.addWidget(line)
 
     def remove_ethics(self):
+        """
+        removes the last line edit from layout (under EthicsApprovals)
+        :return:
+        """
         if len(self.ethics_ls) == 0:
             return
-        self.layout_ethics.removeWidget(self.ethics_ls[-1])
+        self.ethics_layout.removeWidget(self.ethics_ls[-1])
         self.ethics_ls[-1].deleteLater()
         self.ethics_ls = self.ethics_ls[:-1]
 
     def add_ref(self):
+        """
+        adds line edit to the layout (under ReferencesAndLinks)
+        :return:
+        """
         line = new_line_edit(self.modified.emit)
         self.ref_ls.append(line)
-        self.layout_ref.addWidget(line)
+        self.ref_layout.addWidget(line)
 
     def remove_ref(self):
+        """
+        removes the last line edit from layout (under ReferencesAndLinks)
+        :return:
+        """
         if len(self.ref_ls) == 0:
             return
-        self.layout_ref.removeWidget(self.ref_ls[-1])
+        self.ref_layout.removeWidget(self.ref_ls[-1])
         self.ref_ls[-1].deleteLater()
         self.ref_ls = self.ref_ls[:-1]
 
     def init_ui_derivative(self):
+        """
+        adds missing derivative fields from raw dataset description type
+        :return:
+        """
         self.derivative = Derivative()
         self.derivative.modified.connect(self.modified.emit)
-        self.layout_derivative.addWidget(self.derivative)
+        self.derivative_layout.addWidget(self.derivative)
         self.modified.emit()
 
     def clear_ui_derivative(self):
+        """
+        removes derivative fields
+        :return:
+        """
         if self.derivative is None:
             return
         self.derivative.deleteLater()
@@ -273,12 +314,21 @@ class Form(QWidget):
         self.modified.emit()
 
     def dataset_type_handler(self, index):
+        """
+        determine what action to take based on the value of DatasetType
+        :param index:
+        :return:
+        """
         if index == 2:
             self.init_ui_derivative()
         else:
             self.clear_ui_derivative()
 
     def get_data(self):
+        """
+        get relevant data from the user filled fields
+        :return:
+        """
         data = {}
         data['Name'] = self.name_value.text()
         data['BIDSVersion'] = self.bids_ver_value.currentText()
@@ -292,10 +342,9 @@ class Form(QWidget):
         data['ReferencesAndLinks'] = [i.text() for i in self.ref_ls]
         data['DatasetDOI'] = self.doi_value.text()
 
+        # in case the the DatasetType is derivative
         if self.derivative is not None:
             data_derivative = self.derivative.get_data()
             data['GeneratedBy'] = data_derivative['GeneratedBy']
             data['SourceDatasets'] = data_derivative['SourceDatasets']
         return data
-
-

@@ -42,6 +42,12 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('Dataset Description Generator')
 
     def handle_form_modified(self):
+        """
+        decides what actions to take when selected fields in the form are
+        modified, the selected fields will be determined by BIDS specification
+        (required fields that affect validity of the dataset description file)
+        :return:
+        """
         data = self.form_widget.form.get_data()
         self.save_control.set_valid(validate_data(data))
 
