@@ -74,7 +74,6 @@ class Form(QWidget):
         :return:
         """
         row = 0  # for main layout row count
-        policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         # set stretch to enforce last column take available space
         self.main_layout.setColumnStretch(4, 1)
 
@@ -138,7 +137,7 @@ class Form(QWidget):
         ack_label = QLabel('Acknowledgements')
         ack_label.setToolTip(tt.acknowledgements)
         self.ack_value = new_text_edit(self.modified.emit)
-        self.ack_value.setSizePolicy(policy)
+        self.ack_value.setFixedHeight(80)
         self.main_layout.addWidget(ack_label, row, 0)
         row += 1
         self.main_layout.addWidget(self.ack_value, row, 0, 1, -1)
@@ -148,7 +147,7 @@ class Form(QWidget):
         how_to_ack_label = QLabel('HowToAcknowledge')
         how_to_ack_label.setToolTip(tt.how_to_ack)
         self.how_to_ack_value = new_text_edit(self.modified.emit)
-        self.how_to_ack_value.setSizePolicy(policy)
+        self.how_to_ack_value.setFixedHeight(80)
         self.main_layout.addWidget(how_to_ack_label, row, 0)
         row += 1
         self.main_layout.addWidget(self.how_to_ack_value, row, 0, 1, -1)

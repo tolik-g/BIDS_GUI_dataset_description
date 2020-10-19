@@ -78,6 +78,7 @@ class Derivative(QWidget):
 
         # spacer and stretch to push content to top left
         self.main_layout.addItem(QSpacerItem(0, 0), 0, 3, -1, 1)
+        self.main_layout.setRowStretch(row, 1)
         self.main_layout.setColumnStretch(3, 1)
 
     def add_gen_by(self):
@@ -191,9 +192,8 @@ class GeneratedBy(QWidget):
         # Description
         desc_label = QLabel('Description')
         desc_label.setToolTip(tt.gen_description)
-        policy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.desc_value = new_text_edit(self.modified.emit)
-        self.desc_value.setSizePolicy(policy)
+        self.desc_value.setFixedHeight(80)
         self.layout.addWidget(desc_label, row, 0)
         row += 1
         self.layout.addWidget(self.desc_value, row, 0, 1, -1)
