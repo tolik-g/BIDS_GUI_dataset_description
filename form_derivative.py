@@ -16,15 +16,16 @@ class Derivative(QWidget):
         self.state_change_cb = None
 
         # main layout and sub layouts (for dynamic field insertion)
-        self.layout_main = QGridLayout()
-        self.layout_gen_by = QVBoxLayout()
-        self.layout_src_data = QVBoxLayout()
+        self.main_layout = QGridLayout()
+        self.gen_by_layout = QVBoxLayout()
+        self.src_data_layout = QVBoxLayout()
 
         # lists of widgets for dynamically added (and subtracted) fields
         self.gen_by_ls = []
         self.src_data_ls = []
 
-        self.setLayout(self.layout_main)
+        # UI setup
+        self.setLayout(self.main_layout)
         self.init_ui()
         self.add_gen_by()
 
@@ -35,11 +36,12 @@ class Derivative(QWidget):
         specification (v1.4.0).
         :return:
         """
-        self.layout_main.setContentsMargins(0, 0, 0, 0)
-        row = 0
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        row = 0 # for main layout row count
+
         # section separation line
         h_line = HLine()
-        self.layout_main.addWidget(h_line, row, 0, 1, -1)
+        self.main_layout.addWidget(h_line, row, 0, 1, -1)
         row += 1
 
         # GeneratedBy control
@@ -49,13 +51,13 @@ class Derivative(QWidget):
         gen_by_add_button.clicked.connect(self.add_gen_by)
         gen_by_remove_button = QPushButton('-')
         gen_by_remove_button.clicked.connect(self.remove_gen_by)
-        self.layout_main.addWidget(gen_by_label, row, 0)
-        self.layout_main.addWidget(gen_by_remove_button, row, 1)
-        self.layout_main.addWidget(gen_by_add_button, row, 2)
+        self.main_layout.addWidget(gen_by_label, row, 0)
+        self.main_layout.addWidget(gen_by_remove_button, row, 1)
+        self.main_layout.addWidget(gen_by_add_button, row, 2)
         row += 1
 
         # GeneratedBy fields
-        self.layout_main.addLayout(self.layout_gen_by, row, 0, 1, -1)
+        self.main_layout.addLayout(self.gen_by_layout, row, 0, 1, -1)
         row += 1
 
         # SourceDatasets control
@@ -65,33 +67,33 @@ class Derivative(QWidget):
         src_data_add_button.clicked.connect(self.add_src_data)
         src_data_remove_button = QPushButton('-')
         src_data_remove_button.clicked.connect(self.remove_src_data)
-        self.layout_main.addWidget(src_data_label, row, 0)
-        self.layout_main.addWidget(src_data_remove_button, row, 1)
-        self.layout_main.addWidget(src_data_add_button, row, 2)
+        self.main_layout.addWidget(src_data_label, row, 0)
+        self.main_layout.addWidget(src_data_remove_button, row, 1)
+        self.main_layout.addWidget(src_data_add_button, row, 2)
         row += 1
 
         # DataSources fields
-        self.layout_main.addLayout(self.layout_src_data, row, 0, 1, -1)
+        self.main_layout.addLayout(self.src_data_layout, row, 0, 1, -1)
         row += 1
 
-        # spacers to push content to top left
-        self.layout_main.addItem(QSpacerItem(0, 0), 0, 3, -1, 1)
-        self.layout_main.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
+        # spacer and stretch to push content to top left
+        self.main_layout.addItem(QSpacerItem(0, 0), 0, 3, -1, 1)
+        self.main_layout.setColumnStretch(3, 1)
 
     def add_gen_by(self):
         """
-        add a GeneratedBy section
+        add a GeneratedBy section to layout
         :return:
         """
         gen_by = GeneratedBy()
         gen_by.modified.connect(self.modified.emit)
-        self.layout_gen_by.addWidget(gen_by)
+        self.gen_by_layout.addWidget(gen_by)
         self.gen_by_ls.append(gen_by)
         self.modified.emit()
 
     def remove_gen_by(self):
         """
-        remove a GeneratedBy section.
+        remove the last GeneratedBy section from layout.
         there is a requirement to have at least one GeneratedBy section if class
         is initiated, therefore remove won't work if there is a single instance
         of GeneratedBy section
@@ -99,27 +101,39 @@ class Derivative(QWidget):
         """
         if len(self.gen_by_ls) == 1:
             return
-        self.layout_gen_by.removeWidget(self.gen_by_ls[-1])
+        self.gen_by_layout.removeWidget(self.gen_by_ls[-1])
         self.gen_by_ls[-1].deleteLater()
         self.gen_by_ls = self.gen_by_ls[:-1]
         self.modified.emit()
 
     def add_src_data(self):
+        """
+        add a SourceDatasets section to layout
+        :return:
+        """
         src_data = SourceDatasets()
         src_data.modified.connect(self.modified.emit)
-        self.layout_src_data.addWidget(src_data)
+        self.src_data_layout.addWidget(src_data)
         self.src_data_ls.append(src_data)
         self.modified.emit()
 
     def remove_src_data(self):
+        """
+        remove the last SourceDatasets section from layout
+        :return:
+        """
         if len(self.src_data_ls) == 0:
             return
-        self.layout_src_data.removeWidget(self.src_data_ls[-1])
+        self.src_data_layout.removeWidget(self.src_data_ls[-1])
         self.src_data_ls[-1].deleteLater()
         self.src_data_ls = self.src_data_ls[:-1]
         self.modified.emit()
 
     def get_data(self):
+        """
+        get relevant data from the user filled fields
+        :return:
+        """
         gen_by_data_ls = []
         src_data_data_ls = []
         for i in self.gen_by_ls:
@@ -148,13 +162,15 @@ class GeneratedBy(QWidget):
         self.cont_tag_value = None
         self.cont_uri_value = None
 
+        # UI setup
         self.layout = QGridLayout()
-        self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
         self.init_ui()
 
     def init_ui(self):
+        self.layout.setContentsMargins(0, 0, 0, 0)
         row = 0
+
         # Name
         name_label = QLabel('Name')
         name_label.setToolTip(tt.gen_name)
@@ -224,6 +240,10 @@ class GeneratedBy(QWidget):
         self.layout.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
 
     def get_data(self):
+        """
+        get relevant data from the user filled fields
+        :return:
+        """
         data = {
             'Name': self.name_value.text(),
             'Version': self.version_value.text(),
@@ -249,13 +269,15 @@ class SourceDatasets(QWidget):
         self.url_value = None
         self.version_value = None
 
+        # UI setup
         self.layout = QGridLayout()
-        self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
         self.init_ui()
 
     def init_ui(self):
+        self.layout.setContentsMargins(0, 0, 0, 0)
         row = 0
+
         # DOI
         doi_label = QLabel('DOI')
         self.doi_value = new_line_edit(self.modified.emit)
@@ -286,6 +308,10 @@ class SourceDatasets(QWidget):
         self.layout.addItem(QSpacerItem(0, 0), row, 0, 2, -1)
 
     def get_data(self):
+        """
+        get relevant data from the user filled fields
+        :return:
+        """
         data = {
             'DOI': self.doi_value.text(),
             'URL': self.url_value.text(),

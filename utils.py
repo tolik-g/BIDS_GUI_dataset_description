@@ -99,6 +99,9 @@ def remove_empty_fields(data):
 
 
 class HLine(QFrame):
+    """
+    visual line to separate sections in the form
+    """
     def __init__(self):
         super().__init__()
         self.setFrameShape(QFrame.HLine)
