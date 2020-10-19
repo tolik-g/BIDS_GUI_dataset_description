@@ -158,8 +158,9 @@ class GeneratedBy(QWidget):
         # Name
         name_label = QLabel('Name')
         name_label.setToolTip(tt.gen_name)
-        self.layout.addWidget(name_label, row, 0)
         self.name_value = new_line_edit(self.modified.emit)
+        self.name_value.setPlaceholderText('Required')
+        self.layout.addWidget(name_label, row, 0)
         self.layout.addWidget(self.name_value, row, 1, 1, -1)
         row += 1
 

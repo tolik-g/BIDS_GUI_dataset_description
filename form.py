@@ -22,7 +22,7 @@ class Form(QWidget):
     this is the root form, all the fields to be filled by the user are on this
     level, or in widgets instantiated in this class.
     """
-    # all required fields of the form should emit the modified signal
+    # all required fields of the form should emit the 'modified' signal
     modified = Signal()
 
     def __init__(self):
@@ -82,6 +82,7 @@ class Form(QWidget):
         name_label = QLabel('Name')
         name_label.setToolTip(tt.name)
         self.name_value = new_line_edit(self.modified.emit)
+        self.name_value.setPlaceholderText('Required')
         self.main_layout.addWidget(name_label, row, 0)
         self.main_layout.addWidget(self.name_value, row, 1, 1, 4)
         row += 1
