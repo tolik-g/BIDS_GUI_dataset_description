@@ -43,7 +43,7 @@ class SaveController(QWidget):
         cleaned_data = remove_empty_fields(self.get_data())
         f_path = os.path.join(self.last_dir, 'dataset_description.json')
         with open(f_path, 'w', encoding='utf-8') as f:
-            json.dump(cleaned_data, f, indent=4)
+            json.dump(cleaned_data, f, indent=4, ensure_ascii=False)
 
     def save(self):
         if self.last_dir:
