@@ -8,4 +8,4 @@ This is a GUI variant of BIDS Dataset Description generator
 - PyQt5
 
 ### RUNNING THE PROJECT
-    run "main.py"
+    python main.py
