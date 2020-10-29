@@ -20,7 +20,7 @@ class SaveController(QWidget):
 
     def init_ui(self):
         row = 0
-        self.is_valid_icon.setPixmap(QPixmap('icons/invalid.png'))
+        self.is_valid_icon.setPixmap(QPixmap('Icons/invalid.png'))
         self.is_valid_icon.setFixedWidth(20)
         self.layout.addWidget(self.save_button, row, 0)
         self.layout.addWidget(self.is_valid_icon, row, 1)
@@ -32,10 +32,10 @@ class SaveController(QWidget):
 
     def set_valid(self, valid):
         if valid:
-            self.is_valid_icon.setPixmap(QPixmap('icons/valid.png'))
+            self.is_valid_icon.setPixmap(QPixmap('Icons/valid.png'))
             self.is_valid_text.setText("Valid")
         else:
-            self.is_valid_icon.setPixmap(QPixmap('icons/invalid.png'))
+            self.is_valid_icon.setPixmap(QPixmap('Icons/invalid.png'))
             self.is_valid_text.setText("Missing required fields")
         self.save_button.setDisabled(not valid)
 
