@@ -9,7 +9,7 @@ This is a GUI variant of BIDS Dataset Description generator
 ### SETTING UP THE PROJECT
 Executing from command line:  
 1. Download and extract files from zip archive or clone the repository
-2. Open a terminal(Linux/iOS) or a PowerShell/CMD(Windows)
+2. Open a terminal(Linux/macOS) or a PowerShell/CMD(Windows)
 3. In the terminal navigate to the directory containing "main.py"
 4. Execute command:
 ```
