@@ -6,6 +6,12 @@ This is a GUI variant of BIDS Dataset Description generator
 - Python 3.x
 - PyQt5
 
+PyQt5 can be installed with
+
+```bash
+pip install -r requirements.txt
+```
+
 ### SETTING UP THE PROJECT
 Executing from command line:  
 1. Download and extract files from zip archive or clone the repository
